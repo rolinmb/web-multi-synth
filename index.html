@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="description" content="In-Browser Multi-Synthesizer">
+    <meta name="keywords" content="HTML, CSS, JavaScript, TypeScript, Music, Synthesizer">
+    <meta name="author" content="Rolin Blake">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="index.css"/>
+    <title>Browser Multi-Synth</title>
+  </head>
+  <body>
+    <header>
+      <h1>In-Browser Multi-Synth</h1>
+    </header>
+    <main>
+      <div id="keyboard-reference">
+        <h2>KEYBOARD REFERENCE</h2>
+        <p>Black Keys:</p>
+        <table id="black-key-table">
+          <thead>
+            <th>'2'</th>
+            <th>'3'</th>
+            <th>'5'</th>
+            <th>'6'</th>
+            <th>'7'</th>
+            <th>'9'</th>
+            <th>'0'</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>C#4/Db4</td>
+              <td>D#4/Eb4</td>
+              <td>F#4/Gb4</td>
+              <td>G#4/Ab4</td>
+              <td>A#4/Bb4</td>
+              <td>C#5/Db5</td>
+              <td>D#5/Eb5</td>
+              </tr>
+          </tbody>
+        </table>
+        <p>White Keys:</p>
+        <table id="white-key-table">
+          <thead>
+            <th>'Q'</th>
+            <th>'W'</th>
+            <th>'E'</th>
+            <th>'R'</th>
+            <th>'T'</th>
+            <th>'Y'</th>
+            <th>'U'</th>
+            <th>'I'</th>
+            <th>'O'</th>
+            <th>'P'</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>C4</td>
+              <td>D4</td>
+              <td>E4</td>
+              <td>F4</td>
+              <td>G4</td>
+              <td>A4</td>
+              <td>B4</td>
+              <td>C5</td>
+              <td>D5</td>
+              <td>E5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="note-press-wrap">
+        <h3>Keyboard Status:</h3>
+        <p id="key-view"></p>
+        <h3>Synth Notes Status:</h3>
+        <p id="note-press-view"></p>
+      </div>
+      <button id="mute-unmute-btn">Unmute Multi-Synth</button>
+      <div id="gain-sliders-wrap">
+        <ul id="gain-slider-list">
+          <li>
+            <span class="gain-view">MASTER GAIN: <p id="master-gain-view">0.125</p></span>
+            <input id="master-gain-slider" class="gain-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+          </li>
+          <br />
+          <li>
+            <span class="gain-view">MASTER DISTORTION: <p id="master-distortion-view">100</p></span>
+            <input id="master-distortion-slider" class="gain-slider" type="range" min="0" max="200" value="100" step="1" />
+          </li>
+          <br />
+          <li>
+            <span class="gain-view">Sine Waveform Gain: <p id="sine-gain-view">0.125</p></span>
+            <input id="sine-gain-slider" class="gain-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+          </li>
+          <br />
+          <li>
+            <span class="gain-view">Square Waveform Gain: <p id="square-gain-view">0.125</p></span>
+            <input id="square-gain-slider" class="waveform-slider" type="range" min="0" max=".25" value="0.125" step="0.01"  />
+          </li>
+          <br />
+          <li>
+            <span class="gain-view">Sawtooth Waveform Gain: <p id="sawtooth-gain-view" >0.125</p></span>
+            <input id="sawtooth-gain-slider" class="waveform-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+          </li>
+          <br />
+          <li>
+            <span class="gain-view">Triangle Waveform Gain: <p id="triangle-gain-view">0.125</p></span>
+            <input id="triangle-gain-slider" class="waveform-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+          </li>
+          <br />
+        </ul>
+      </div>
+    </main>
+    <footer>
+      <p>Made by Rolin Blake</p>
+    </footer>
+  </body>
+  <script type="application/javascript" src="dist/app.js"></script>
+</html>

@@ -1,0 +1,35 @@
+body {
+  background-image: url('noisy12.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  display: grid;
+  place-items: center;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1em;
+}
+
+main {
+  display: grid;
+  place-items: center;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(128, 128, 128, 0.75);
+  width: 100%;
+  max-width: 1000px;
+  height: 100%;
+
+}
+
+#key-view, #note-press-view {
+  width: 100%;
+  max-width: 1000px;
+  overflow-x: scroll;
+  overflow-y: auto;
+}
+
+ul {
+  list-style: none;
+}
