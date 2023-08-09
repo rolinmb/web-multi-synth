@@ -154,14 +154,7 @@ document.onkeyup = (e) => {
 document.getElementById('mute-unmute-btn')!.addEventListener('click', function() {
     muted = !muted;
     if (muted) {
-        for (const key in noteMap) {
-            noteMap[key].sineOsc = undefined;
-            noteMap[key].squareOsc = undefined;
-            noteMap[key].sawtoothOsc = undefined;
-            noteMap[key].triangleOsc = undefined;
-        }
         document.getElementById('mute-unmute-btn')!.innerHTML = "Unmute Synthesizer";
-    } else {
         for (const key in noteMap) {
             if (noteMap[key].sineOsc) {
                 noteMap[key].sineOsc!.stop();
@@ -174,7 +167,20 @@ document.getElementById('mute-unmute-btn')!.addEventListener('click', function()
             noteMap[key].sawtoothOsc = undefined;
             noteMap[key].triangleOsc = undefined;
         }
+    } else {
         document.getElementById('mute-unmute-btn')!.innerHTML = "Mute Synthesizer";
+        for (const key in noteMap) {
+            if (noteMap[key].sineOsc) {
+                noteMap[key].sineOsc!.stop();
+                noteMap[key].squareOsc!.stop();
+                noteMap[key].sawtoothOsc!.stop();
+                noteMap[key].triangleOsc!.stop();
+            }
+            noteMap[key].sineOsc = undefined;
+            noteMap[key].squareOsc = undefined;
+            noteMap[key].sawtoothOsc = undefined;
+            noteMap[key].triangleOsc = undefined;
+        }
     }
 });
 
