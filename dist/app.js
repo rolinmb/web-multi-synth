@@ -1,5 +1,6 @@
 "use strict";
 var audioCtx = undefined;
+var compressor = undefined;
 var masterGain = undefined;
 var distortion = undefined;
 var sineGain = undefined;
@@ -74,20 +75,20 @@ document.onkeydown = (e) => {
             let sinOsc = audioCtx.createOscillator();
             sinOsc.type = "sine";
             sinOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            sinOsc.connect(sineGain).connect(distortion);
+            sinOsc.connect(sineGain).connect(distortion).connect(compressor);
             let sqrOsc = audioCtx.createOscillator();
             sqrOsc.type = "square";
             sqrOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            sqrOsc.connect(squareGain).connect(distortion);
+            sqrOsc.connect(squareGain).connect(distortion).connect(compressor);
             let sawOsc = audioCtx.createOscillator();
             sawOsc.type = "sawtooth";
             sawOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            sawOsc.connect(squareGain).connect(distortion);
+            sawOsc.connect(squareGain).connect(distortion).connect(compressor);
             let triOsc = audioCtx.createOscillator();
             triOsc.type = "triangle";
             triOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            triOsc.connect(triangleGain).connect(distortion);
-            distortion.connect(masterGain).connect(audioCtx.destination);
+            triOsc.connect(triangleGain).connect(distortion).connect(compressor);
+            compressor.connect(masterGain).connect(audioCtx.destination);
             if (!muted) {
                 sinOsc.start();
                 sqrOsc.start();
@@ -162,6 +163,36 @@ document.getElementById('master-gain-slider').addEventListener('input', function
     masterGain.gain.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-gain-view').innerHTML = val.toString();
 });
+document.getElementById('master-threshold-slider').addEventListener('input', function () {
+    let slider = document.getElementById('master-threshold-slider');
+    let val = slider.valueAsNumber;
+    compressor.threshold.setValueAtTime(val, audioCtx.currentTime);
+    document.getElementById('master-threshold-view').innerHTML = val.toString();
+});
+document.getElementById('master-knee-slider').addEventListener('input', function () {
+    let slider = document.getElementById('master-knee-slider');
+    let val = slider.valueAsNumber;
+    compressor.knee.setValueAtTime(val, audioCtx.currentTime);
+    document.getElementById('master-knee-slider').innerHTML = val.toString();
+});
+document.getElementById('master-ratio-slider').addEventListener('input', function () {
+    let slider = document.getElementById('master-ratio-slider');
+    let val = slider.valueAsNumber;
+    compressor.ratio.setValueAtTime(val, audioCtx.currentTime);
+    document.getElementById('master-ratio-view').innerHTML = val.toString();
+});
+document.getElementById('master-attack-slider').addEventListener('input', function () {
+    let slider = document.getElementById('master-attack-slider');
+    let val = slider.valueAsNumber;
+    compressor.attack.setValueAtTime(val, audioCtx.currentTime);
+    document.getElementById('master-attack-view').innerHTML = val.toString();
+});
+document.getElementById('master-release-slider').addEventListener('input', function () {
+    let slider = document.getElementById('master-release-slider');
+    let val = slider.valueAsNumber;
+    compressor.release.setValueAtTime(val, audioCtx.currentTime);
+    document.getElementById('master-release-view').innerHTML = val.toString();
+});
 function getDistortionCurve(amount) {
     const k = typeof amount === "number" ? amount : 50;
     const n_samples = 44100;
@@ -210,6 +241,22 @@ window.addEventListener('load', function () {
         masterGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
         let masterGainSlider = document.getElementById('master-gain-slider');
         masterGainSlider.value = String(0.125);
+        compressor = audioCtx.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-50, audioCtx.currentTime);
+        compressor.knee.setValueAtTime(40, audioCtx.currentTime);
+        compressor.ratio.setValueAtTime(12, audioCtx.currentTime);
+        compressor.attack.setValueAtTime(0, audioCtx.currentTime);
+        compressor.release.setValueAtTime(0.25, audioCtx.currentTime);
+        let compressorThresholdSlider = document.getElementById('master-threshold-slider');
+        compressorThresholdSlider.value = String(-50);
+        let compressorKneeSlider = document.getElementById('master-knee-slider');
+        compressorKneeSlider.value = String(40);
+        let compressorRatioSlider = document.getElementById('master-ratio-slider');
+        compressorRatioSlider.value = String(12);
+        let compressorAttackSlider = document.getElementById('master-attack-slider');
+        compressorAttackSlider.value = String(0);
+        let compressorReleaseSlider = document.getElementById('master-release-slider');
+        compressorReleaseSlider.value = String(0.25);
         distortion = audioCtx.createWaveShaper();
         distortion.curve = getDistortionCurve(0);
         distortion.oversample = "2x";
