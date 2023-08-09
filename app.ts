@@ -254,11 +254,6 @@ window.addEventListener('load', function() {
         sawtoothGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
         triangleGain = audioCtx.createGain();
         triangleGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
-        let waveformSliders = document.getElementsByClassName('waveform-slider');
-        for (let i = 0; i < waveformSliders.length; i++) {
-            const waveformSlider =  waveformSliders[i] as HTMLInputElement;
-            waveformSlider.value = String(0.125);
-        }
     } catch (error) {
         alert("The JavaScript Web Audio API is not supported by this browser.");
     }
