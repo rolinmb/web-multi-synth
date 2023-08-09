@@ -208,9 +208,13 @@ window.addEventListener('load', function () {
         audioCtx = new AudioContext();
         masterGain = audioCtx.createGain();
         masterGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
+        let masterGainSlider = document.getElementById('master-gain-slider');
+        masterGainSlider.value = String(0.125);
         distortion = audioCtx.createWaveShaper();
         distortion.curve = getDistortionCurve(0);
         distortion.oversample = "2x";
+        let masterDistortionSlider = document.getElementById('master-distortion-slider');
+        masterDistortionSlider.value = String(0);
         sineGain = audioCtx.createGain();
         sineGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
         squareGain = audioCtx.createGain();
@@ -219,6 +223,11 @@ window.addEventListener('load', function () {
         sawtoothGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
         triangleGain = audioCtx.createGain();
         triangleGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
+        let waveformSliders = document.getElementsByClassName('waveform-slider');
+        for (let i = 0; i < waveformSliders.length; i++) {
+            let slider = waveformSliders[i];
+            slider.value = String(0.125);
+        }
     }
     catch (error) {
         alert("The JavaScript Web Audio API is not supported by this browser.");
