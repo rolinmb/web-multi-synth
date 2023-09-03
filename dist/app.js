@@ -272,8 +272,8 @@ function paintWaveform(real, imag) {
     canvasCtx.beginPath();
     for (let i = 0; i < width; i++) {
         const x = (i / width) * 2 - 1;
-        const y = real.reduce((sum, a, n) => sum + a * Math.cos(n * Math.PI * x), 0);
-        +imag.reduce((sum, b, n) => sum + b * Math.sin(n * Math.PI * x), 0);
+        const y = real.reduce((sum, a, n) => sum + a * Math.cos(n * Math.PI * x), 0) +
+            imag.reduce((sum, b, n) => sum + b * Math.sin(n * Math.PI * x), 0);
         const yPos = (y / 2 + 0.5) * height;
         if (i === 0) {
             canvasCtx.moveTo(i, yPos);

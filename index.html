@@ -135,14 +135,18 @@
           </li>
           <br />
           <li>
-            <span class="param-view">Custom Waveform Gain: <p id="custom-gain-view">0</p></span>
-            <input id="custom-gain-slider" type="range" min="0" max="0.25" value="0" step="0.01" />
-            <div id="waveform-editor">
-              <span class="param-view"># of Harmonics <p id="custom-harmonics-view">4</p></span>
-              <input id="custom-harmonics-slider" type="range" min="3" max="15" value="4" step="1">
-              <button id="gen-custom-wave-btn">Generate Custom Waveform</button>
+            <div>
+              <span class="param-view">Custom Waveform Gain: <p id="custom-gain-view">0</p></span>
+              <input id="custom-gain-slider" type="range" min="0" max="0.25" value="0" step="0.01" />
+              <div id="waveform-editor">
+                <span class="param-view"># of Harmonics <p id="custom-harmonics-view">4</p></span>
+                <input id="custom-harmonics-slider" type="range" min="3" max="15" value="4" step="1">
+                <br />
+                <button id="gen-custom-wave-btn">Generate New Custom Waveform</button>
+              </div>
+              <h4>CUSTOM WAVEFORM</h4>
+              <canvas id="custom-waveform-canvas" width="800" height="200"></canvas>
             </div>
-            <canvas id="custom-waveform-canvas" width="800" height="200"></canvas>
           </li>
           <br />
         </ul>
