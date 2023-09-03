@@ -116,10 +116,10 @@ document.onkeydown = (e) => {
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
             triOsc.connect(triangleGain!).connect(distortion!).connect(compressor!);
 
-            let manualOsc: OscillatorNode = audioCtx!.createOscillator();
-            manualOsc.setPeriodicWave(customWave!);
-            manualOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            manualOsc.connect(customGain!).connect(distortion!).connect(compressor!);
+            let cstmOsc: OscillatorNode = audioCtx!.createOscillator();
+            cstmOsc.setPeriodicWave(customWave!);
+            cstmOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
+            cstmOsc.connect(customGain!).connect(distortion!).connect(compressor!);
 
             compressor!.connect(masterGain!).connect(audioCtx!.destination);
 
@@ -128,14 +128,14 @@ document.onkeydown = (e) => {
                 sqrOsc.start();
                 sawOsc.start();
                 triOsc.start();
-                manualOsc.start();
+                cstmOsc.start();
             }
 
             noteMap[keyStr].sineOsc = sinOsc;
             noteMap[keyStr].squareOsc = sqrOsc;
             noteMap[keyStr].sawtoothOsc = sawOsc;
             noteMap[keyStr].triangleOsc = triOsc;
-            noteMap[keyStr].customOsc = manualOsc;
+            noteMap[keyStr].customOsc = cstmOsc;
         }
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
