@@ -344,7 +344,7 @@ document.getElementById('gen-custom-wave-btn')!.addEventListener('click', functi
         }
     }
     customWave = audioCtx!.createPeriodicWave(real, imag);
-    paintWaveform(real, imag)
+    paintWaveform(real, imag);
 });
 
 window.addEventListener('load', function() {
