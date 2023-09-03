@@ -6,6 +6,8 @@ var sineGain: GainNode | undefined = undefined;
 var squareGain: GainNode | undefined = undefined;
 var sawtoothGain: GainNode | undefined = undefined;
 var triangleGain: GainNode | undefined = undefined;
+var customGain: GainNode | undefined = undefined;
+var customWave: PeriodicWave | undefined = undefined;
 var muted: boolean = true;
 
 type Note = {
@@ -15,42 +17,43 @@ type Note = {
     squareOsc: OscillatorNode | undefined;
     sawtoothOsc: OscillatorNode | undefined;
     triangleOsc: OscillatorNode | undefined;
+    customOsc: OscillatorNode | undefined;
 }
 
 var c4: Note = { name: 'C4', frequency: 261.63,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var cs4: Note = { name: 'C#4/Db4', frequency: 277.18,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var d4: Note = { name: 'D4', frequency: 293.66, 
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var ds4: Note = { name: 'D#4/Eb4', frequency: 311.13,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var e4: Note = { name: 'E4', frequency: 329.63,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var f4: Note = { name: 'F4', frequency: 349.23,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var fs4: Note = { name: 'F#4/Gb4', frequency: 369.99,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined};
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var g4: Note = { name: 'G4', frequency: 392.0,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var gs4: Note = { name: 'G#4/Ab4', frequency: 415.3,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var a4: Note = { name: 'A4', frequency: 440.0,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var as4: Note = { name: 'A#4/Bb4', frequency: 466.16,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var b4: Note = { name: 'B4', frequency: 493.88,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var c5: Note = { name: 'C5', frequency: 523.25,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var cs5: Note = { name: 'C#5/Db5', frequency: 554.37,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var d5: Note = { name: 'D5', frequency: 587.33,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var ds5: Note = { name: 'D#5/Eb5', frequency: 622.25,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var e5: Note = { name: 'E5', frequency: 659.25,
-    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined };
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 
 interface NoteMap {
     [key: string]: Note;
@@ -113,6 +116,11 @@ document.onkeydown = (e) => {
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
             triOsc.connect(triangleGain!).connect(distortion!).connect(compressor!);
 
+            let manualOsc: OscillatorNode = audioCtx!.createOscillator();
+            manualOsc.setPeriodicWave(customWave!);
+            manualOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
+            manualOsc.connect(customGain!).connect(distortion!).connect(compressor!);
+
             compressor!.connect(masterGain!).connect(audioCtx!.destination);
 
             if (!muted) {
@@ -120,12 +128,14 @@ document.onkeydown = (e) => {
                 sqrOsc.start();
                 sawOsc.start();
                 triOsc.start();
+                manualOsc.start();
             }
 
             noteMap[keyStr].sineOsc = sinOsc;
             noteMap[keyStr].squareOsc = sqrOsc;
             noteMap[keyStr].sawtoothOsc = sawOsc;
             noteMap[keyStr].triangleOsc = triOsc;
+            noteMap[keyStr].customOsc = manualOsc;
         }
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
@@ -143,11 +153,13 @@ document.onkeyup = (e) => {
             noteMap[keyStr].squareOsc!.stop();
             noteMap[keyStr].sawtoothOsc!.stop();
             noteMap[keyStr].triangleOsc!.stop();
+            noteMap[keyStr].customOsc!.stop();
         } catch {}
         noteMap[keyStr].sineOsc = undefined;
         noteMap[keyStr].squareOsc = undefined;
         noteMap[keyStr].sawtoothOsc = undefined;
         noteMap[keyStr].triangleOsc = undefined;
+        noteMap[keyStr].customOsc = undefined;
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
 }
@@ -162,11 +174,13 @@ document.getElementById('mute-unmute-btn')!.addEventListener('click', function()
                 noteMap[key].squareOsc!.stop();
                 noteMap[key].sawtoothOsc!.stop();
                 noteMap[key].triangleOsc!.stop();
+                noteMap[key].customOsc!.stop();
             }
             noteMap[key].sineOsc = undefined;
             noteMap[key].squareOsc = undefined;
             noteMap[key].sawtoothOsc = undefined;
             noteMap[key].triangleOsc = undefined;
+            noteMap[key].customOsc = undefined;
         }
     } else {
         document.getElementById('mute-unmute-btn')!.innerHTML = "Mute Synthesizer";
@@ -176,11 +190,13 @@ document.getElementById('mute-unmute-btn')!.addEventListener('click', function()
                 noteMap[key].squareOsc!.stop();
                 noteMap[key].sawtoothOsc!.stop();
                 noteMap[key].triangleOsc!.stop();
+                noteMap[key].customOsc!.stop();
             }
             noteMap[key].sineOsc = undefined;
             noteMap[key].squareOsc = undefined;
             noteMap[key].sawtoothOsc = undefined;
             noteMap[key].triangleOsc = undefined;
+            noteMap[key].customOsc = undefined;
         }
     }
 });
@@ -274,6 +290,63 @@ document.getElementById('triangle-gain-slider')!.addEventListener('input', funct
     document.getElementById('triangle-gain-view')!.innerHTML = val.toString();
 });
 
+document.getElementById('custom-gain-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('custom-gain-slider');
+    let val: number = slider.valueAsNumber;
+    customGain!.gain.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('custom-gain-view')!.innerHTML = val.toString();
+});
+
+document.getElementById('custom-harmonics-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('custom-harmonics-slider');
+    let val: number = slider.valueAsNumber;
+    document.getElementById('custom-harmonics-view')!.innerHTML = val.toString();
+});
+
+function paintWaveform(real: number[], imag: number[]) {
+    let canvas = <HTMLCanvasElement>document.getElementById('custom-waveform-canvas');
+    const canvasCtx = canvas.getContext('2d');
+    if (!canvasCtx) {
+        console.error("Error; <canvas> context not available.");
+        return;
+    }
+    const width = canvas.width;
+    const height = canvas.height;
+    canvasCtx.clearRect(0, 0, width, height);
+    canvasCtx.beginPath();
+    for (let i = 0; i < width; i++) {
+        const x = (i / width) * 2 - 1;
+        const y = real.reduce((sum, a, n) => sum + a * Math.cos(n* Math.PI * x), 0);
+            + imag.reduce((sum, b, n) => sum + b * Math.sin(n * Math.PI * x), 0);
+        const yPos = (y / 2 + 0.5) * height;
+        if (i === 0) {
+            canvasCtx.moveTo(i, yPos);
+        } else {
+            canvasCtx.lineTo(i, yPos);
+        }
+    }
+    canvasCtx.strokeStyle = 'blue';
+    canvasCtx.lineWidth = 2;
+    canvasCtx.stroke();
+}
+
+document.getElementById('gen-custom-wave-btn')!.addEventListener('click', function() {
+    let slider = <HTMLInputElement>document.getElementById('custom-harmonics-slider');
+    const numHarmonics = slider.valueAsNumber;
+    let real = [];
+    let imag = [];
+    for (let i = 1; i <= numHarmonics; i++) {
+        real.push(0);
+        if (i % 2 === 1) {
+            imag.push(1 / i);
+        } else {
+            imag.push(0);
+        }
+    }
+    customWave = audioCtx!.createPeriodicWave(real, imag);
+    paintWaveform(real, imag)
+});
+
 window.addEventListener('load', function() {
     try {
         audioCtx = new AudioContext();
@@ -324,12 +397,34 @@ window.addEventListener('load', function() {
         
         triangleGain = audioCtx.createGain();
         triangleGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
-        
+
         let waveformSliders = document.getElementsByClassName('waveform-slider');
         for (let i = 0; i < waveformSliders.length; i++) {
             let slider = <HTMLInputElement>waveformSliders[i];
             slider.value = String(0.125);
         }
+
+        customGain = audioCtx.createGain();
+        customGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+        let customGainSlider = <HTMLInputElement>document.getElementById('custom-gain-slider');
+        customGainSlider.value = String(0);
+
+        let real = [];
+        let imag = [];
+        for (let i = 1; i <= 4; i++) {
+            real.push(0);
+            if (i % 2 === 1) {
+                imag.push(1 / i);
+            } else {
+                imag.push(0);
+            }
+        }
+        customWave = audioCtx.createPeriodicWave(real, imag);
+        paintWaveform(real, imag)
+
+        let customHarmonicsSlider = <HTMLInputElement>document.getElementById('custom-harmonics-slider');
+        customHarmonicsSlider.value = String(4);
         
     } catch (error) {
         alert("The JavaScript Web Audio API is not supported by this browser.");

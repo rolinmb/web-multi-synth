@@ -104,7 +104,7 @@
           </li>
           <br />
           <li>
-            <span>MASTER COMPRESSOR RELEASE: <p id="master-release-view">0.25</p></span>
+            <span class="param-view">MASTER COMPRESSOR RELEASE: <p id="master-release-view">0.25</p></span>
             <input id="master-release-slider" class="master-slider" type="range" min="0" max="1000" value="0.25" step="0.25" />
           </li>
           <br />
@@ -116,22 +116,33 @@
         <ul id="waveform-sliders-list">
           <li>
             <span class="param-view">Sine Waveform Gain: <p id="sine-gain-view">0.125</p></span>
-            <input id="sine-gain-slider" class="gain-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+            <input id="sine-gain-slider" class="gain-slider" type="range" min="0" max="0.25" value="0.125" step="0.01" />
           </li>
           <br />
           <li>
             <span class="param-view">Square Waveform Gain: <p id="square-gain-view">0.125</p></span>
-            <input id="square-gain-slider" class="waveform-slider" type="range" min="0" max=".25" value="0.125" step="0.01"  />
+            <input id="square-gain-slider" class="waveform-slider" type="range" min="0" max="0.25" value="0.125" step="0.01"  />
           </li>
           <br />
           <li>
             <span class="param-view">Sawtooth Waveform Gain: <p id="sawtooth-gain-view" >0.125</p></span>
-            <input id="sawtooth-gain-slider" class="waveform-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+            <input id="sawtooth-gain-slider" class="waveform-slider" type="range" min="0" max="0.25" value="0.125" step="0.01" />
           </li>
           <br />
           <li>
             <span class="param-view">Triangle Waveform Gain: <p id="triangle-gain-view">0.125</p></span>
-            <input id="triangle-gain-slider" class="waveform-slider" type="range" min="0" max=".25" value="0.125" step="0.01" />
+            <input id="triangle-gain-slider" class="waveform-slider" type="range" min="0" max="0.25" value="0.125" step="0.01" />
+          </li>
+          <br />
+          <li>
+            <span class="param-view">Custom Waveform Gain: <p id="custom-gain-view">0</p></span>
+            <input id="custom-gain-slider" type="range" min="0" max="0.25" value="0" step="0.01" />
+            <div id="waveform-editor">
+              <span class="param-view"># of Harmonics <p id="custom-harmonics-view">4</p></span>
+              <input id="custom-harmonics-slider" type="range" min="3" max="15" value="4" step="1">
+              <button id="gen-custom-wave-btn">Generate Custom Waveform</button>
+            </div>
+            <canvas id="custom-waveform-canvas" width="800" height="200"></canvas>
           </li>
           <br />
         </ul>
