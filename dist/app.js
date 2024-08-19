@@ -63,8 +63,14 @@ const noteMap = {
     '0': ds5,
     'P': e5
 };
+function getNoteStatusMap() {
+    let noteStatusMap = {};
+    for (const key in noteMap) {
+        noteStatusMap[key] = noteMap[key].isPressed;
+    }
+    return noteStatusMap;
+}
 var pressedKeyMap = {};
-var pressedNoteMap = {};
 document.onkeydown = (e) => {
     let keyChar = String(e.key).toUpperCase();
     pressedKeyMap[keyChar] = true;
@@ -109,7 +115,7 @@ document.onkeydown = (e) => {
             note.customOsc = cstmOsc;
         }
     }
-    document.getElementById('note-press-view').innerHTML = JSON.stringify(pressedNoteMap);
+    document.getElementById('note-press-view').innerHTML = JSON.stringify(getNoteStatusMap());
 };
 document.onkeyup = (e) => {
     let keyChar = String(e.key).toUpperCase();
@@ -132,7 +138,7 @@ document.onkeyup = (e) => {
         note.triangleOsc = undefined;
         note.customOsc = undefined;
     }
-    document.getElementById('note-press-view').innerHTML = JSON.stringify(pressedNoteMap);
+    document.getElementById('note-press-view').innerHTML = JSON.stringify(getNoteStatusMap());
 };
 document.getElementById('mute-unmute-btn').addEventListener('click', function () {
     muted = !muted;
