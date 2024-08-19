@@ -167,37 +167,23 @@ document.onkeyup = (e) => {
 document.getElementById('mute-unmute-btn')!.addEventListener('click', function() {
     muted = !muted;
     if (muted) {
-        document.getElementById('mute-unmute-btn')!.innerHTML = "Unmute Synthesizer";
-        for (const key in noteMap) {
-            if (noteMap[key].sineOsc) {
-                noteMap[key].sineOsc!.stop();
-                noteMap[key].squareOsc!.stop();
-                noteMap[key].sawtoothOsc!.stop();
-                noteMap[key].triangleOsc!.stop();
-                noteMap[key].customOsc!.stop();
-            }
-            noteMap[key].sineOsc = undefined;
-            noteMap[key].squareOsc = undefined;
-            noteMap[key].sawtoothOsc = undefined;
-            noteMap[key].triangleOsc = undefined;
-            noteMap[key].customOsc = undefined;
-        }
+        document.getElementById('mute-unmute-btn')!.innerHTML = "unmute";
     } else {
-        document.getElementById('mute-unmute-btn')!.innerHTML = "Mute Synthesizer";
-        for (const key in noteMap) {
-            if (noteMap[key].sineOsc) {
-                noteMap[key].sineOsc!.stop();
-                noteMap[key].squareOsc!.stop();
-                noteMap[key].sawtoothOsc!.stop();
-                noteMap[key].triangleOsc!.stop();
-                noteMap[key].customOsc!.stop();
-            }
-            noteMap[key].sineOsc = undefined;
-            noteMap[key].squareOsc = undefined;
-            noteMap[key].sawtoothOsc = undefined;
-            noteMap[key].triangleOsc = undefined;
-            noteMap[key].customOsc = undefined;
+        document.getElementById('mute-unmute-btn')!.innerHTML = "mute";
+    }
+    for (const key in noteMap) {
+    	if (noteMap[key].sineOsc) {
+            noteMap[key].sineOsc!.stop();
+            noteMap[key].squareOsc!.stop();
+            noteMap[key].sawtoothOsc!.stop();
+            noteMap[key].triangleOsc!.stop();
+            noteMap[key].customOsc!.stop();
         }
+        noteMap[key].sineOsc = undefined;
+        noteMap[key].squareOsc = undefined;
+        noteMap[key].sawtoothOsc = undefined;
+	noteMap[key].triangleOsc = undefined;
+        noteMap[key].customOsc = undefined;
     }
 });
 
