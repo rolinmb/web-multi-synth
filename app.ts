@@ -1,7 +1,7 @@
 var audioCtx: AudioContext | undefined = undefined;
-var compressor: DynamicsCompressorNode | undefined = undefined;
+var masterComp: DynamicsCompressorNode | undefined = undefined;
 var masterGain: GainNode | undefined = undefined;
-var distortion: WaveShaperNode | undefined = undefined;
+var masterDist: WaveShaperNode | undefined = undefined;
 var sineGain: GainNode | undefined = undefined;
 var squareGain: GainNode | undefined = undefined;
 var sawtoothGain: GainNode | undefined = undefined;
@@ -11,48 +11,49 @@ var customWave: PeriodicWave | undefined = undefined;
 var muted: boolean = true;
 
 type Note = {
-    name: string;
-    frequency: number;
-    sineOsc: OscillatorNode | undefined;
-    squareOsc: OscillatorNode | undefined;
-    sawtoothOsc: OscillatorNode | undefined;
-    triangleOsc: OscillatorNode | undefined;
-    customOsc: OscillatorNode | undefined;
+    name: string,
+    frequency: number,
+    isPressed: boolean,
+    sineOsc: OscillatorNode | undefined,
+    squareOsc: OscillatorNode | undefined,
+    sawtoothOsc: OscillatorNode | undefined,
+    triangleOsc: OscillatorNode | undefined,
+    customOsc: OscillatorNode | undefined,
 }
 
-var c4: Note = { name: 'C4', frequency: 261.63,
+var c4: Note = { name: 'C4', frequency: 261.63, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var cs4: Note = { name: 'C#4/Db4', frequency: 277.18,
+var cs4: Note = { name: 'C#4/Db4', frequency: 277.18, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var d4: Note = { name: 'D4', frequency: 293.66, 
+var d4: Note = { name: 'D4', frequency: 293.66,  isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var ds4: Note = { name: 'D#4/Eb4', frequency: 311.13,
+var ds4: Note = { name: 'D#4/Eb4', frequency: 311.13, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var e4: Note = { name: 'E4', frequency: 329.63,
+var e4: Note = { name: 'E4', frequency: 329.63, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var f4: Note = { name: 'F4', frequency: 349.23,
+var f4: Note = { name: 'F4', frequency: 349.23, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var fs4: Note = { name: 'F#4/Gb4', frequency: 369.99,
+var fs4: Note = { name: 'F#4/Gb4', frequency: 369.99, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var g4: Note = { name: 'G4', frequency: 392.0,
+var g4: Note = { name: 'G4', frequency: 392.0, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var gs4: Note = { name: 'G#4/Ab4', frequency: 415.3,
+var gs4: Note = { name: 'G#4/Ab4', frequency: 415.3, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var a4: Note = { name: 'A4', frequency: 440.0,
+var a4: Note = { name: 'A4', frequency: 440.0, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var as4: Note = { name: 'A#4/Bb4', frequency: 466.16,
+var as4: Note = { name: 'A#4/Bb4', frequency: 466.16, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var b4: Note = { name: 'B4', frequency: 493.88,
+var b4: Note = { name: 'B4', frequency: 493.88, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var c5: Note = { name: 'C5', frequency: 523.25,
+var c5: Note = { name: 'C5', frequency: 523.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var cs5: Note = { name: 'C#5/Db5', frequency: 554.37,
+var cs5: Note = { name: 'C#5/Db5', frequency: 554.37, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var d5: Note = { name: 'D5', frequency: 587.33,
+var d5: Note = { name: 'D5', frequency: 587.33, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var ds5: Note = { name: 'D#5/Eb5', frequency: 622.25,
+var ds5: Note = { name: 'D#5/Eb5', frequency: 622.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var e5: Note = { name: 'E5', frequency: 659.25,
+var e5: Note = { name: 'E5', frequency: 659.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 
 interface NoteMap {
@@ -87,41 +88,41 @@ var pressedKeyMap: keyMap = {};
 var pressedNoteMap: keyMap = {};
 
 document.onkeydown = (e) => {
-    let keyStr: string = String(e.key).toUpperCase();
-    pressedKeyMap[keyStr] = true;
+    let keyChar: string = String(e.key).toUpperCase();
+    pressedKeyMap[keyChar] = true;
     document.getElementById('key-view')!.innerHTML = JSON.stringify(pressedKeyMap);
-    if (keyStr in noteMap) {
-        let noteStr: string = noteMap[keyStr].name;
-        if (!pressedNoteMap[noteStr]) {
-            pressedNoteMap[noteStr] = true;
-            const freq: number = noteMap[keyStr].frequency;
+    if (keyChar in noteMap) {
+        let noteName: string = noteMap[keyChar].name;
+        if (!pressedNoteMap[noteName]) {
+            pressedNoteMap[noteName] = true;
+            const freq: number = noteMap[keyChar].frequency;
 
             let sinOsc: OscillatorNode = audioCtx!.createOscillator();
             sinOsc.type = <OscillatorType>"sine";
             sinOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sinOsc.connect(sineGain!).connect(distortion!).connect(compressor!);
+            sinOsc.connect(sineGain!).connect(masterDist!).connect(masterComp!);
 
             let sqrOsc: OscillatorNode = audioCtx!.createOscillator();
             sqrOsc.type = <OscillatorType>"square";
             sqrOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sqrOsc.connect(squareGain!).connect(distortion!).connect(compressor!);
+            sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterComp!);
 
             let sawOsc: OscillatorNode = audioCtx!.createOscillator();
             sawOsc.type = <OscillatorType>"sawtooth";
             sawOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sawOsc.connect(squareGain!).connect(distortion!).connect(compressor!);
+            sawOsc.connect(squareGain!).connect(masterDist!).connect(masterComp!);
 
             let triOsc: OscillatorNode = audioCtx!.createOscillator();
             triOsc.type = <OscillatorType>"triangle";
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            triOsc.connect(triangleGain!).connect(distortion!).connect(compressor!);
+            triOsc.connect(triangleGain!).connect(masterDist!).connect(masterComp!);
 
             let cstmOsc: OscillatorNode = audioCtx!.createOscillator();
             cstmOsc.setPeriodicWave(customWave!);
             cstmOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            cstmOsc.connect(customGain!).connect(distortion!).connect(compressor!);
+            cstmOsc.connect(customGain!).connect(masterDist!).connect(masterComp!);
 
-            compressor!.connect(masterGain!).connect(audioCtx!.destination);
+            masterComp!.connect(masterGain!).connect(audioCtx!.destination);
 
             if (!muted) {
                 sinOsc.start();
@@ -131,35 +132,35 @@ document.onkeydown = (e) => {
                 cstmOsc.start();
             }
 
-            noteMap[keyStr].sineOsc = sinOsc;
-            noteMap[keyStr].squareOsc = sqrOsc;
-            noteMap[keyStr].sawtoothOsc = sawOsc;
-            noteMap[keyStr].triangleOsc = triOsc;
-            noteMap[keyStr].customOsc = cstmOsc;
+            noteMap[keyChar].sineOsc = sinOsc;
+            noteMap[keyChar].squareOsc = sqrOsc;
+            noteMap[keyChar].sawtoothOsc = sawOsc;
+            noteMap[keyChar].triangleOsc = triOsc;
+            noteMap[keyChar].customOsc = cstmOsc;
         }
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
 }
 
 document.onkeyup = (e) => {
-    let keyStr: string = String(e.key).toUpperCase();
-    pressedKeyMap[keyStr] = false;
+    let keyChar: string = String(e.key).toUpperCase();
+    pressedKeyMap[keyChar] = false;
     document.getElementById('key-view')!.innerHTML = JSON.stringify(pressedKeyMap);
-    if (keyStr in noteMap) {
-        let noteStr: string = noteMap[keyStr].name;
-        pressedNoteMap[noteStr] = false;
+    if (keyChar in noteMap) {
+        let noteName: string = noteMap[keyChar].name;
+        pressedNoteMap[noteName] = false;
         try {
-            noteMap[keyStr].sineOsc!.stop();
-            noteMap[keyStr].squareOsc!.stop();
-            noteMap[keyStr].sawtoothOsc!.stop();
-            noteMap[keyStr].triangleOsc!.stop();
-            noteMap[keyStr].customOsc!.stop();
+            noteMap[keyChar].sineOsc!.stop();
+            noteMap[keyChar].squareOsc!.stop();
+            noteMap[keyChar].sawtoothOsc!.stop();
+            noteMap[keyChar].triangleOsc!.stop();
+            noteMap[keyChar].customOsc!.stop();
         } catch {}
-        noteMap[keyStr].sineOsc = undefined;
-        noteMap[keyStr].squareOsc = undefined;
-        noteMap[keyStr].sawtoothOsc = undefined;
-        noteMap[keyStr].triangleOsc = undefined;
-        noteMap[keyStr].customOsc = undefined;
+        noteMap[keyChar].sineOsc = undefined;
+        noteMap[keyChar].squareOsc = undefined;
+        noteMap[keyChar].sawtoothOsc = undefined;
+        noteMap[keyChar].triangleOsc = undefined;
+        noteMap[keyChar].customOsc = undefined;
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
 }
@@ -182,7 +183,7 @@ document.getElementById('mute-unmute-btn')!.addEventListener('click', function()
         noteMap[key].sineOsc = undefined;
         noteMap[key].squareOsc = undefined;
         noteMap[key].sawtoothOsc = undefined;
-	noteMap[key].triangleOsc = undefined;
+	    noteMap[key].triangleOsc = undefined;
         noteMap[key].customOsc = undefined;
     }
 });
@@ -197,35 +198,35 @@ document.getElementById('master-gain-slider')!.addEventListener('input', functio
 document.getElementById('master-threshold-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-threshold-slider');
     let val: number = slider.valueAsNumber;
-    compressor!.threshold.setValueAtTime(val, audioCtx!.currentTime);
+    masterComp!.threshold.setValueAtTime(val, audioCtx!.currentTime);
     document.getElementById('master-threshold-view')!.innerHTML = val.toString();
 });
 
 document.getElementById('master-knee-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-knee-slider');
     let val: number = slider.valueAsNumber;
-    compressor!.knee.setValueAtTime(val, audioCtx!.currentTime);
+    masterComp!.knee.setValueAtTime(val, audioCtx!.currentTime);
     document.getElementById('master-knee-slider')!.innerHTML = val.toString();
 });
 
 document.getElementById('master-ratio-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-ratio-slider');
     let val: number = slider.valueAsNumber;
-    compressor!.ratio.setValueAtTime(val, audioCtx!.currentTime);
+    masterComp!.ratio.setValueAtTime(val, audioCtx!.currentTime);
     document.getElementById('master-ratio-view')!.innerHTML = val.toString();
 });
 
 document.getElementById('master-attack-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-attack-slider');
     let val: number = slider.valueAsNumber;
-    compressor!.attack.setValueAtTime(val, audioCtx!.currentTime);
+    masterComp!.attack.setValueAtTime(val, audioCtx!.currentTime);
     document.getElementById('master-attack-view')!.innerHTML = val.toString();
 });
 
 document.getElementById('master-release-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-release-slider');
     let val: number = slider.valueAsNumber;
-    compressor!.release.setValueAtTime(val, audioCtx!.currentTime);
+    masterComp!.release.setValueAtTime(val, audioCtx!.currentTime);
     document.getElementById('master-release-view')!.innerHTML = val.toString();
 });
 
@@ -244,7 +245,7 @@ function getDistortionCurve(amount?: number): Float32Array {
 document.getElementById('master-distortion-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-distortion-slider');
     let val: number = slider.valueAsNumber;
-    distortion!.curve = getDistortionCurve(val);
+    masterDist!.curve = getDistortionCurve(val);
     document.getElementById('master-distortion-view')!.innerHTML = val.toString();
 });
 
@@ -343,12 +344,12 @@ window.addEventListener('load', function() {
         let masterGainSlider = <HTMLInputElement>document.getElementById('master-gain-slider')
         masterGainSlider.value = String(0.125);
 
-        compressor = audioCtx.createDynamicsCompressor();
-        compressor.threshold.setValueAtTime(-50, audioCtx.currentTime);
-        compressor.knee.setValueAtTime(40, audioCtx.currentTime);
-        compressor.ratio.setValueAtTime(12, audioCtx.currentTime);
-        compressor.attack.setValueAtTime(0, audioCtx.currentTime);
-        compressor.release.setValueAtTime(0.25, audioCtx.currentTime);
+        masterComp = audioCtx.createDynamicsCompressor();
+        masterComp.threshold.setValueAtTime(-50, audioCtx.currentTime);
+        masterComp.knee.setValueAtTime(40, audioCtx.currentTime);
+        masterComp.ratio.setValueAtTime(12, audioCtx.currentTime);
+        masterComp.attack.setValueAtTime(0, audioCtx.currentTime);
+        masterComp.release.setValueAtTime(0.25, audioCtx.currentTime);
         
         let compressorThresholdSlider = <HTMLInputElement>document.getElementById('master-threshold-slider');
         compressorThresholdSlider.value = String(-50);
@@ -365,9 +366,9 @@ window.addEventListener('load', function() {
         let compressorReleaseSlider = <HTMLInputElement>document.getElementById('master-release-slider');
         compressorReleaseSlider.value = String(0.25);
         
-        distortion = audioCtx.createWaveShaper();
-        distortion.curve = getDistortionCurve(0);
-        distortion.oversample = <OverSampleType>"2x";
+        masterDist = audioCtx.createWaveShaper();
+        masterDist.curve = getDistortionCurve(0);
+        masterDist.oversample = <OverSampleType>"2x";
         
         let masterDistortionSlider = <HTMLInputElement>document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(0);
