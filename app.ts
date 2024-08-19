@@ -92,10 +92,10 @@ document.onkeydown = (e) => {
     pressedKeyMap[keyChar] = true;
     document.getElementById('key-view')!.innerHTML = JSON.stringify(pressedKeyMap);
     if (keyChar in noteMap) {
-        let noteName: string = noteMap[keyChar].name;
-        if (!pressedNoteMap[noteName]) {
-            pressedNoteMap[noteName] = true;
-            const freq: number = noteMap[keyChar].frequency;
+        const note = noteMap[keyChar];
+        if (!note.isPressed) {
+            note.isPressed = true;
+            const freq: number = note.frequency;
 
             let sinOsc: OscillatorNode = audioCtx!.createOscillator();
             sinOsc.type = <OscillatorType>"sine";
@@ -132,11 +132,11 @@ document.onkeydown = (e) => {
                 cstmOsc.start();
             }
 
-            noteMap[keyChar].sineOsc = sinOsc;
-            noteMap[keyChar].squareOsc = sqrOsc;
-            noteMap[keyChar].sawtoothOsc = sawOsc;
-            noteMap[keyChar].triangleOsc = triOsc;
-            noteMap[keyChar].customOsc = cstmOsc;
+            note.sineOsc = sinOsc;
+            note.squareOsc = sqrOsc;
+            note.sawtoothOsc = sawOsc;
+            note.triangleOsc = triOsc;
+            note.customOsc = cstmOsc;
         }
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
@@ -147,44 +147,41 @@ document.onkeyup = (e) => {
     pressedKeyMap[keyChar] = false;
     document.getElementById('key-view')!.innerHTML = JSON.stringify(pressedKeyMap);
     if (keyChar in noteMap) {
-        let noteName: string = noteMap[keyChar].name;
-        pressedNoteMap[noteName] = false;
+        const note = noteMap[keyChar];
+        note.isPressed = false;
         try {
-            noteMap[keyChar].sineOsc!.stop();
-            noteMap[keyChar].squareOsc!.stop();
-            noteMap[keyChar].sawtoothOsc!.stop();
-            noteMap[keyChar].triangleOsc!.stop();
-            noteMap[keyChar].customOsc!.stop();
+            note.sineOsc!.stop();
+            note.squareOsc!.stop();
+            note.sawtoothOsc!.stop();
+            note.triangleOsc!.stop();
+            note.customOsc!.stop();
         } catch {}
-        noteMap[keyChar].sineOsc = undefined;
-        noteMap[keyChar].squareOsc = undefined;
-        noteMap[keyChar].sawtoothOsc = undefined;
-        noteMap[keyChar].triangleOsc = undefined;
-        noteMap[keyChar].customOsc = undefined;
+        note.sineOsc = undefined;
+        note.squareOsc = undefined;
+        note.sawtoothOsc = undefined;
+        note.triangleOsc = undefined;
+        note.customOsc = undefined;
     }
     document.getElementById('note-press-view')!.innerHTML = JSON.stringify(pressedNoteMap);
 }
 
 document.getElementById('mute-unmute-btn')!.addEventListener('click', function() {
     muted = !muted;
-    if (muted) {
-        document.getElementById('mute-unmute-btn')!.innerHTML = "unmute";
-    } else {
-        document.getElementById('mute-unmute-btn')!.innerHTML = "mute";
-    }
-    for (const key in noteMap) {
-    	if (noteMap[key].sineOsc) {
-            noteMap[key].sineOsc!.stop();
-            noteMap[key].squareOsc!.stop();
-            noteMap[key].sawtoothOsc!.stop();
-            noteMap[key].triangleOsc!.stop();
-            noteMap[key].customOsc!.stop();
+    document.getElementById('mute-unmute-btn')!.innerHTML = muted ? "unmute" : "mute";
+    for (const keyChar in noteMap) {
+        const note = noteMap[keyChar]
+    	if (note.isPressed) {
+            note.sineOsc!.stop();
+            note.squareOsc!.stop();
+            note.sawtoothOsc!.stop();
+            note.triangleOsc!.stop();
+            note.customOsc!.stop();
         }
-        noteMap[key].sineOsc = undefined;
-        noteMap[key].squareOsc = undefined;
-        noteMap[key].sawtoothOsc = undefined;
-	    noteMap[key].triangleOsc = undefined;
-        noteMap[key].customOsc = undefined;
+        note.sineOsc = undefined;
+        note.squareOsc = undefined;
+        note.sawtoothOsc = undefined;
+	    note.triangleOsc = undefined;
+        note.customOsc = undefined;
     }
 });
 

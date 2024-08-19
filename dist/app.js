@@ -1,8 +1,8 @@
 "use strict";
 var audioCtx = undefined;
-var compressor = undefined;
+var masterComp = undefined;
 var masterGain = undefined;
-var distortion = undefined;
+var masterDist = undefined;
 var sineGain = undefined;
 var squareGain = undefined;
 var sawtoothGain = undefined;
@@ -10,39 +10,39 @@ var triangleGain = undefined;
 var customGain = undefined;
 var customWave = undefined;
 var muted = true;
-var c4 = { name: 'C4', frequency: 261.63,
+var c4 = { name: 'C4', frequency: 261.63, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var cs4 = { name: 'C#4/Db4', frequency: 277.18,
+var cs4 = { name: 'C#4/Db4', frequency: 277.18, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var d4 = { name: 'D4', frequency: 293.66,
+var d4 = { name: 'D4', frequency: 293.66, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var ds4 = { name: 'D#4/Eb4', frequency: 311.13,
+var ds4 = { name: 'D#4/Eb4', frequency: 311.13, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var e4 = { name: 'E4', frequency: 329.63,
+var e4 = { name: 'E4', frequency: 329.63, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var f4 = { name: 'F4', frequency: 349.23,
+var f4 = { name: 'F4', frequency: 349.23, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var fs4 = { name: 'F#4/Gb4', frequency: 369.99,
+var fs4 = { name: 'F#4/Gb4', frequency: 369.99, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var g4 = { name: 'G4', frequency: 392.0,
+var g4 = { name: 'G4', frequency: 392.0, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var gs4 = { name: 'G#4/Ab4', frequency: 415.3,
+var gs4 = { name: 'G#4/Ab4', frequency: 415.3, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var a4 = { name: 'A4', frequency: 440.0,
+var a4 = { name: 'A4', frequency: 440.0, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var as4 = { name: 'A#4/Bb4', frequency: 466.16,
+var as4 = { name: 'A#4/Bb4', frequency: 466.16, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var b4 = { name: 'B4', frequency: 493.88,
+var b4 = { name: 'B4', frequency: 493.88, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var c5 = { name: 'C5', frequency: 523.25,
+var c5 = { name: 'C5', frequency: 523.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var cs5 = { name: 'C#5/Db5', frequency: 554.37,
+var cs5 = { name: 'C#5/Db5', frequency: 554.37, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var d5 = { name: 'D5', frequency: 587.33,
+var d5 = { name: 'D5', frequency: 587.33, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var ds5 = { name: 'D#5/Eb5', frequency: 622.25,
+var ds5 = { name: 'D#5/Eb5', frequency: 622.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
-var e5 = { name: 'E5', frequency: 659.25,
+var e5 = { name: 'E5', frequency: 659.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 const noteMap = {
     'Q': c4,
@@ -66,35 +66,35 @@ const noteMap = {
 var pressedKeyMap = {};
 var pressedNoteMap = {};
 document.onkeydown = (e) => {
-    let keyStr = String(e.key).toUpperCase();
-    pressedKeyMap[keyStr] = true;
+    let keyChar = String(e.key).toUpperCase();
+    pressedKeyMap[keyChar] = true;
     document.getElementById('key-view').innerHTML = JSON.stringify(pressedKeyMap);
-    if (keyStr in noteMap) {
-        let noteStr = noteMap[keyStr].name;
-        if (!pressedNoteMap[noteStr]) {
-            pressedNoteMap[noteStr] = true;
-            const freq = noteMap[keyStr].frequency;
+    if (keyChar in noteMap) {
+        const note = noteMap[keyChar];
+        if (!note.isPressed) {
+            note.isPressed = true;
+            const freq = note.frequency;
             let sinOsc = audioCtx.createOscillator();
             sinOsc.type = "sine";
             sinOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            sinOsc.connect(sineGain).connect(distortion).connect(compressor);
+            sinOsc.connect(sineGain).connect(masterDist).connect(masterComp);
             let sqrOsc = audioCtx.createOscillator();
             sqrOsc.type = "square";
             sqrOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            sqrOsc.connect(squareGain).connect(distortion).connect(compressor);
+            sqrOsc.connect(squareGain).connect(masterDist).connect(masterComp);
             let sawOsc = audioCtx.createOscillator();
             sawOsc.type = "sawtooth";
             sawOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            sawOsc.connect(squareGain).connect(distortion).connect(compressor);
+            sawOsc.connect(squareGain).connect(masterDist).connect(masterComp);
             let triOsc = audioCtx.createOscillator();
             triOsc.type = "triangle";
             triOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            triOsc.connect(triangleGain).connect(distortion).connect(compressor);
+            triOsc.connect(triangleGain).connect(masterDist).connect(masterComp);
             let cstmOsc = audioCtx.createOscillator();
             cstmOsc.setPeriodicWave(customWave);
             cstmOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            cstmOsc.connect(customGain).connect(distortion).connect(compressor);
-            compressor.connect(masterGain).connect(audioCtx.destination);
+            cstmOsc.connect(customGain).connect(masterDist).connect(masterComp);
+            masterComp.connect(masterGain).connect(audioCtx.destination);
             if (!muted) {
                 sinOsc.start();
                 sqrOsc.start();
@@ -102,59 +102,55 @@ document.onkeydown = (e) => {
                 triOsc.start();
                 cstmOsc.start();
             }
-            noteMap[keyStr].sineOsc = sinOsc;
-            noteMap[keyStr].squareOsc = sqrOsc;
-            noteMap[keyStr].sawtoothOsc = sawOsc;
-            noteMap[keyStr].triangleOsc = triOsc;
-            noteMap[keyStr].customOsc = cstmOsc;
+            note.sineOsc = sinOsc;
+            note.squareOsc = sqrOsc;
+            note.sawtoothOsc = sawOsc;
+            note.triangleOsc = triOsc;
+            note.customOsc = cstmOsc;
         }
     }
     document.getElementById('note-press-view').innerHTML = JSON.stringify(pressedNoteMap);
 };
 document.onkeyup = (e) => {
-    let keyStr = String(e.key).toUpperCase();
-    pressedKeyMap[keyStr] = false;
+    let keyChar = String(e.key).toUpperCase();
+    pressedKeyMap[keyChar] = false;
     document.getElementById('key-view').innerHTML = JSON.stringify(pressedKeyMap);
-    if (keyStr in noteMap) {
-        let noteStr = noteMap[keyStr].name;
-        pressedNoteMap[noteStr] = false;
+    if (keyChar in noteMap) {
+        const note = noteMap[keyChar];
+        note.isPressed = false;
         try {
-            noteMap[keyStr].sineOsc.stop();
-            noteMap[keyStr].squareOsc.stop();
-            noteMap[keyStr].sawtoothOsc.stop();
-            noteMap[keyStr].triangleOsc.stop();
-            noteMap[keyStr].customOsc.stop();
+            note.sineOsc.stop();
+            note.squareOsc.stop();
+            note.sawtoothOsc.stop();
+            note.triangleOsc.stop();
+            note.customOsc.stop();
         }
         catch (_a) { }
-        noteMap[keyStr].sineOsc = undefined;
-        noteMap[keyStr].squareOsc = undefined;
-        noteMap[keyStr].sawtoothOsc = undefined;
-        noteMap[keyStr].triangleOsc = undefined;
-        noteMap[keyStr].customOsc = undefined;
+        note.sineOsc = undefined;
+        note.squareOsc = undefined;
+        note.sawtoothOsc = undefined;
+        note.triangleOsc = undefined;
+        note.customOsc = undefined;
     }
     document.getElementById('note-press-view').innerHTML = JSON.stringify(pressedNoteMap);
 };
 document.getElementById('mute-unmute-btn').addEventListener('click', function () {
     muted = !muted;
-    if (muted) {
-        document.getElementById('mute-unmute-btn').innerHTML = "unmute";
-    }
-    else {
-        document.getElementById('mute-unmute-btn').innerHTML = "mute";
-    }
-    for (const key in noteMap) {
-        if (noteMap[key].sineOsc) {
-            noteMap[key].sineOsc.stop();
-            noteMap[key].squareOsc.stop();
-            noteMap[key].sawtoothOsc.stop();
-            noteMap[key].triangleOsc.stop();
-            noteMap[key].customOsc.stop();
+    document.getElementById('mute-unmute-btn').innerHTML = muted ? "unmute" : "mute";
+    for (const keyChar in noteMap) {
+        const note = noteMap[keyChar];
+        if (note.isPressed) {
+            note.sineOsc.stop();
+            note.squareOsc.stop();
+            note.sawtoothOsc.stop();
+            note.triangleOsc.stop();
+            note.customOsc.stop();
         }
-        noteMap[key].sineOsc = undefined;
-        noteMap[key].squareOsc = undefined;
-        noteMap[key].sawtoothOsc = undefined;
-        noteMap[key].triangleOsc = undefined;
-        noteMap[key].customOsc = undefined;
+        note.sineOsc = undefined;
+        note.squareOsc = undefined;
+        note.sawtoothOsc = undefined;
+        note.triangleOsc = undefined;
+        note.customOsc = undefined;
     }
 });
 document.getElementById('master-gain-slider').addEventListener('input', function () {
@@ -166,31 +162,31 @@ document.getElementById('master-gain-slider').addEventListener('input', function
 document.getElementById('master-threshold-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-threshold-slider');
     let val = slider.valueAsNumber;
-    compressor.threshold.setValueAtTime(val, audioCtx.currentTime);
+    masterComp.threshold.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-threshold-view').innerHTML = val.toString();
 });
 document.getElementById('master-knee-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-knee-slider');
     let val = slider.valueAsNumber;
-    compressor.knee.setValueAtTime(val, audioCtx.currentTime);
+    masterComp.knee.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-knee-slider').innerHTML = val.toString();
 });
 document.getElementById('master-ratio-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-ratio-slider');
     let val = slider.valueAsNumber;
-    compressor.ratio.setValueAtTime(val, audioCtx.currentTime);
+    masterComp.ratio.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-ratio-view').innerHTML = val.toString();
 });
 document.getElementById('master-attack-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-attack-slider');
     let val = slider.valueAsNumber;
-    compressor.attack.setValueAtTime(val, audioCtx.currentTime);
+    masterComp.attack.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-attack-view').innerHTML = val.toString();
 });
 document.getElementById('master-release-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-release-slider');
     let val = slider.valueAsNumber;
-    compressor.release.setValueAtTime(val, audioCtx.currentTime);
+    masterComp.release.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-release-view').innerHTML = val.toString();
 });
 function getDistortionCurve(amount) {
@@ -207,7 +203,7 @@ function getDistortionCurve(amount) {
 document.getElementById('master-distortion-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-distortion-slider');
     let val = slider.valueAsNumber;
-    distortion.curve = getDistortionCurve(val);
+    masterDist.curve = getDistortionCurve(val);
     document.getElementById('master-distortion-view').innerHTML = val.toString();
 });
 document.getElementById('sine-gain-slider').addEventListener('input', function () {
@@ -296,12 +292,12 @@ window.addEventListener('load', function () {
         masterGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
         let masterGainSlider = document.getElementById('master-gain-slider');
         masterGainSlider.value = String(0.125);
-        compressor = audioCtx.createDynamicsCompressor();
-        compressor.threshold.setValueAtTime(-50, audioCtx.currentTime);
-        compressor.knee.setValueAtTime(40, audioCtx.currentTime);
-        compressor.ratio.setValueAtTime(12, audioCtx.currentTime);
-        compressor.attack.setValueAtTime(0, audioCtx.currentTime);
-        compressor.release.setValueAtTime(0.25, audioCtx.currentTime);
+        masterComp = audioCtx.createDynamicsCompressor();
+        masterComp.threshold.setValueAtTime(-50, audioCtx.currentTime);
+        masterComp.knee.setValueAtTime(40, audioCtx.currentTime);
+        masterComp.ratio.setValueAtTime(12, audioCtx.currentTime);
+        masterComp.attack.setValueAtTime(0, audioCtx.currentTime);
+        masterComp.release.setValueAtTime(0.25, audioCtx.currentTime);
         let compressorThresholdSlider = document.getElementById('master-threshold-slider');
         compressorThresholdSlider.value = String(-50);
         let compressorKneeSlider = document.getElementById('master-knee-slider');
@@ -312,9 +308,9 @@ window.addEventListener('load', function () {
         compressorAttackSlider.value = String(0);
         let compressorReleaseSlider = document.getElementById('master-release-slider');
         compressorReleaseSlider.value = String(0.25);
-        distortion = audioCtx.createWaveShaper();
-        distortion.curve = getDistortionCurve(0);
-        distortion.oversample = "2x";
+        masterDist = audioCtx.createWaveShaper();
+        masterDist.curve = getDistortionCurve(0);
+        masterDist.oversample = "2x";
         let masterDistortionSlider = document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(0);
         sineGain = audioCtx.createGain();
