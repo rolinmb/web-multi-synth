@@ -83,7 +83,7 @@ const noteMap: NoteMap = {
 function getNoteStatusMap(): { [key: string]: boolean } {
     let noteStatusMap: { [key: string]: boolean } = {};
     for (const key in noteMap) {
-        noteStatusMap[key] = noteMap[key].isPressed;
+        noteStatusMap[noteMap[key].name] = noteMap[key].isPressed;
     }
     return noteStatusMap;
 }

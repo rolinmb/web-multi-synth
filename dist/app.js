@@ -66,7 +66,7 @@ const noteMap = {
 function getNoteStatusMap() {
     let noteStatusMap = {};
     for (const key in noteMap) {
-        noteStatusMap[key] = noteMap[key].isPressed;
+        noteStatusMap[noteMap[key].name] = noteMap[key].isPressed;
     }
     return noteStatusMap;
 }
