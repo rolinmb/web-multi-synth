@@ -98,22 +98,22 @@ document.onkeydown = (e) => {
             const freq: number = note.frequency;
 
             let sinOsc: OscillatorNode = audioCtx!.createOscillator();
-            sinOsc.type = <OscillatorType>"sine";
+            sinOsc.type = <OscillatorType>'sine';
             sinOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
             sinOsc.connect(sineGain!).connect(masterDist!).connect(masterComp!);
 
             let sqrOsc: OscillatorNode = audioCtx!.createOscillator();
-            sqrOsc.type = <OscillatorType>"square";
+            sqrOsc.type = <OscillatorType>'square';
             sqrOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
             sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterComp!);
 
             let sawOsc: OscillatorNode = audioCtx!.createOscillator();
-            sawOsc.type = <OscillatorType>"sawtooth";
+            sawOsc.type = <OscillatorType>'sawtooth';
             sawOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
             sawOsc.connect(squareGain!).connect(masterDist!).connect(masterComp!);
 
             let triOsc: OscillatorNode = audioCtx!.createOscillator();
-            triOsc.type = <OscillatorType>"triangle";
+            triOsc.type = <OscillatorType>'triangle';
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
             triOsc.connect(triangleGain!).connect(masterDist!).connect(masterComp!);
 
@@ -167,7 +167,7 @@ document.onkeyup = (e) => {
 
 document.getElementById('mute-unmute-btn')!.addEventListener('click', function() {
     muted = !muted;
-    document.getElementById('mute-unmute-btn')!.innerHTML = muted ? "unmute" : "mute";
+    document.getElementById('mute-unmute-btn')!.innerHTML = muted ? 'unmute' : 'mute';
     for (const keyChar in noteMap) {
         const note = noteMap[keyChar]
     	if (note.isPressed) {
@@ -228,7 +228,7 @@ document.getElementById('master-release-slider')!.addEventListener('input', func
 });
 
 function getDistortionCurve(amount?: number): Float32Array {
-    const k: number = typeof amount === "number" ? amount : 50;
+    const k: number = typeof amount === 'number' ? amount : 50;
     const n_samples: number = 44100;
     const curve: Float32Array = new Float32Array(n_samples);
     const deg: number = Math.PI / 180;
@@ -291,7 +291,7 @@ function paintWaveform(real: number[], imag: number[]) {
     let canvas = <HTMLCanvasElement>document.getElementById('custom-waveform-canvas');
     const canvasCtx = canvas.getContext('2d');
     if (!canvasCtx) {
-        console.error("Error; <canvas> context not available.");
+        console.error('Error; <canvas> context not available.');
         return;
     }
     const width = canvas.width;
@@ -365,7 +365,7 @@ window.addEventListener('load', function() {
         
         masterDist = audioCtx.createWaveShaper();
         masterDist.curve = getDistortionCurve(0);
-        masterDist.oversample = <OverSampleType>"2x";
+        masterDist.oversample = <OverSampleType>'2x';
         
         let masterDistortionSlider = <HTMLInputElement>document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(0);
@@ -411,6 +411,6 @@ window.addEventListener('load', function() {
         customHarmonicsSlider.value = String(4);
         
     } catch (error) {
-        alert("The JavaScript Web Audio API is not supported by this browser.");
+        alert('The JavaScript Web Audio API is not supported by this browser.');
     }
 });

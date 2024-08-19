@@ -75,19 +75,19 @@ document.onkeydown = (e) => {
             note.isPressed = true;
             const freq = note.frequency;
             let sinOsc = audioCtx.createOscillator();
-            sinOsc.type = "sine";
+            sinOsc.type = 'sine';
             sinOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             sinOsc.connect(sineGain).connect(masterDist).connect(masterComp);
             let sqrOsc = audioCtx.createOscillator();
-            sqrOsc.type = "square";
+            sqrOsc.type = 'square';
             sqrOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             sqrOsc.connect(squareGain).connect(masterDist).connect(masterComp);
             let sawOsc = audioCtx.createOscillator();
-            sawOsc.type = "sawtooth";
+            sawOsc.type = 'sawtooth';
             sawOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             sawOsc.connect(squareGain).connect(masterDist).connect(masterComp);
             let triOsc = audioCtx.createOscillator();
-            triOsc.type = "triangle";
+            triOsc.type = 'triangle';
             triOsc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             triOsc.connect(triangleGain).connect(masterDist).connect(masterComp);
             let cstmOsc = audioCtx.createOscillator();
@@ -136,7 +136,7 @@ document.onkeyup = (e) => {
 };
 document.getElementById('mute-unmute-btn').addEventListener('click', function () {
     muted = !muted;
-    document.getElementById('mute-unmute-btn').innerHTML = muted ? "unmute" : "mute";
+    document.getElementById('mute-unmute-btn').innerHTML = muted ? 'unmute' : 'mute';
     for (const keyChar in noteMap) {
         const note = noteMap[keyChar];
         if (note.isPressed) {
@@ -190,7 +190,7 @@ document.getElementById('master-release-slider').addEventListener('input', funct
     document.getElementById('master-release-view').innerHTML = val.toString();
 });
 function getDistortionCurve(amount) {
-    const k = typeof amount === "number" ? amount : 50;
+    const k = typeof amount === 'number' ? amount : 50;
     const n_samples = 44100;
     const curve = new Float32Array(n_samples);
     const deg = Math.PI / 180;
@@ -245,7 +245,7 @@ function paintWaveform(real, imag) {
     let canvas = document.getElementById('custom-waveform-canvas');
     const canvasCtx = canvas.getContext('2d');
     if (!canvasCtx) {
-        console.error("Error; <canvas> context not available.");
+        console.error('Error; <canvas> context not available.');
         return;
     }
     const width = canvas.width;
@@ -310,7 +310,7 @@ window.addEventListener('load', function () {
         compressorReleaseSlider.value = String(0.25);
         masterDist = audioCtx.createWaveShaper();
         masterDist.curve = getDistortionCurve(0);
-        masterDist.oversample = "2x";
+        masterDist.oversample = '2x';
         let masterDistortionSlider = document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(0);
         sineGain = audioCtx.createGain();
@@ -347,6 +347,6 @@ window.addEventListener('load', function () {
         customHarmonicsSlider.value = String(4);
     }
     catch (error) {
-        alert("The JavaScript Web Audio API is not supported by this browser.");
+        alert('The JavaScript Web Audio API is not supported by this browser.');
     }
 });
