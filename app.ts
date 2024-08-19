@@ -20,7 +20,30 @@ type Note = {
     triangleOsc: OscillatorNode | undefined,
     customOsc: OscillatorNode | undefined,
 }
-
+var c3: Note = { name: 'C3', frequency: 130.81, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var cs3: Note = { name: 'C#3/Dd3', frequency: 138.59, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var d3: Note = { name: 'D3', frequency: 146.83, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var ds3: Note = { name: 'D#3/Eb3', frequency: 155.56, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined};
+var e3: Note = { name: 'E3', frequency: 164.81, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined};
+var f3: Note = { name: 'F3', frequency: 174.61, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var fs3: Note = { name: 'F#3/Gb3', frequency: 185.0, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var g3: Note = { name: 'G3', frequency: 196.0, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var gs3: Note = { name: 'G#3/Ab3', frequency: 207.65, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var a3: Note = { name: 'A3', frequency: 220.0, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var as3: Note = { name: 'A#3/Bb3', frequency: 233.08, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
+var b3: Note = { name: 'B3', frequency: 246.94, isPressed: false,
+    sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var c4: Note = { name: 'C4', frequency: 261.63, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var cs4: Note = { name: 'C#4/Db4', frequency: 277.18, isPressed: false,
@@ -61,6 +84,18 @@ interface NoteMap {
 }
 
 const noteMap: NoteMap = {
+    'Z': c3,
+    'S': cs3,
+    'X': d3,
+    'D': ds3,
+    'C': e3,
+    'V': f3,
+    'G': fs3,
+    'B': g3,
+    'H': gs3,
+    'N': a3,
+    'J': as3,
+    'M': b3,
     'Q': c4,
     '2': cs4,
     'W': d4,
