@@ -1,0 +1,37 @@
+{
+  "name": "web-multi-synth",
+  "version": "1.0.0",
+  "description": "JavaScript Web Audio API Multi-Oscillator Synthesizer",
+  "main": "src/app.ts",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "prod": "webpack --mode production",
+    "watch": "webpack --watch --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolinmb/web-multi-synth.git"
+  },
+  "keywords": [
+    "Application",
+    "Music",
+    "TypeScript",
+    "Synthesizer",
+    "Audio",
+    "Audio",
+    "Effects",
+    "Audio",
+    "FX"
+  ],
+  "author": "Rolin Blake",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rolinmb/web-multi-synth/issues"
+  },
+  "homepage": "https://github.com/rolinmb/web-multi-synth#readme",
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

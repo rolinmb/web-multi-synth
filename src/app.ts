@@ -3,6 +3,7 @@ var audioCtx: AudioContext | undefined = undefined;
 var masterComp: DynamicsCompressorNode | undefined = undefined;
 var masterGain: GainNode | undefined = undefined;
 var masterDist: WaveShaperNode | undefined = undefined;
+var masterDelay: DelayNode | undefined = undefined;
 var masterPan: StereoPannerNode | undefined = undefined;
 var sineGain: GainNode | undefined = undefined;
 var squareGain: GainNode | undefined = undefined;
@@ -137,27 +138,27 @@ document.onkeydown = (e) => {
             let sinOsc: OscillatorNode = audioCtx!.createOscillator();
             sinOsc.type = <OscillatorType>'sine';
             sinOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sinOsc.connect(sineGain!).connect(masterDist!).connect(masterComp!);
+            sinOsc.connect(sineGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
 
             let sqrOsc: OscillatorNode = audioCtx!.createOscillator();
             sqrOsc.type = <OscillatorType>'square';
             sqrOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterComp!);
+            sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
 
             let sawOsc: OscillatorNode = audioCtx!.createOscillator();
             sawOsc.type = <OscillatorType>'sawtooth';
             sawOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sawOsc.connect(sawtoothGain!).connect(masterDist!).connect(masterComp!);
+            sawOsc.connect(sawtoothGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
 
             let triOsc: OscillatorNode = audioCtx!.createOscillator();
             triOsc.type = <OscillatorType>'triangle';
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            triOsc.connect(triangleGain!).connect(masterDist!).connect(masterComp!);
+            triOsc.connect(triangleGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
 
             let cstmOsc: OscillatorNode = audioCtx!.createOscillator();
             cstmOsc.setPeriodicWave(customWave!);
             cstmOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            cstmOsc.connect(customGain!).connect(masterDist!).connect(masterComp!);
+            cstmOsc.connect(customGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
 
             masterComp!.connect(masterGain!).connect(audioCtx!.destination);
 
@@ -492,6 +493,15 @@ window.addEventListener('load', function() {
         
         let masterDistortionSlider = <HTMLInputElement>document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(10);
+
+        let masterDelaySlider = <HTMLInputElement>this.document.getElementById('master-delay-slider');
+        masterDelaySlider.value = String(0.01);
+
+        masterDelay = audioCtx.createDelay(3);
+        masterDelay.delayTime.setValueAtTime(0.01, audioCtx.currentTime);
+
+        let masterPanningSlider = <HTMLInputElement>this.document.getElementById('master-panning-slider');
+        masterPanningSlider.value = String(0);
 
         masterPan = audioCtx.createStereoPanner();
         masterPan.pan.setValueAtTime(0, audioCtx.currentTime);

@@ -190,7 +190,13 @@
           </li>
           <br />
           <li class="slider-container">
-            <span class="param-view">MASTER PANNING: <p id="master-panning-view">0</p></span>
+            <span class="param-view">MASTER DELAY TIME (SECONDS): <p id="master-delay-view">0.01</p></span>
+            <input id="master-delay-slider" class="master-slider", type="range", min="0" max="3" value="0.01" step="0.01">
+          </li>
+        </ul>
+          <br />
+          <li class="slider-container">
+            <span class="param-view">MASTER PANNING (LEFT = -1, RIGHT = 1): <p id="master-panning-view">0</p></span>
             <input id="master-panning-slider" class="master-slider", type="range", min="-1" max="1" value="0" step="0.01">
           </li>
         </ul>
@@ -237,5 +243,5 @@
       <p>Last Update 8/20/2024 - <a href="https://github.com/rolinmb/web-multi-synth">Source Code</a></p>
     </footer>
   </body>
-  <script type="application/javascript" src="app.js"></script>
+  <script type="application/javascript" src="dist.bundle.js"></script>
 </html>
