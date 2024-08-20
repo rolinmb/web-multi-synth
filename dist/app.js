@@ -272,8 +272,10 @@ function getDistortionCurve(typeStr, amount) {
                 curve[i] = k * x * curve[i];
                 break;
             case "eo":
-                curve[i];
                 curve[i] = k * x * curve[i] - (k * Math.pow(k * x, 3)) / 3;
+                break;
+            case "even":
+                curve[i] = Math.pow(x, 2) * (1 + k * Math.pow(x, 2));
                 break;
             case "odd":
                 curve[i] += ((k * x) * Math.pow(curve[i], 3)) / 3;
