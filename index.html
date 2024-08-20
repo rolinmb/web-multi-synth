@@ -153,6 +153,14 @@
             <span class="param-view">MASTER DISTORTION: <p id="master-distortion-view">0</p></span>
             <input id="master-distortion-slider" class="master-slider" type="range" min="0" max="300" value="0" step="1" />
           </li>
+          <li class="slider-container">
+            <span class="param-view">DISTORTION OVERSAMPLING:</span>
+            <select id="master-distortion-select">
+              <option value="none">none</option>
+              <option value="2x" selected>2x</option>
+              <option value="4x">4x</option>
+            </select>
+          </li>
         </ul>
         <ul id="waveform-sliders-list">
           <li class="slider-container">
@@ -194,7 +202,7 @@
       </div>
     </main>
     <footer>
-      <p>Last Update 9/3/2023 - <a href="https://github.com/rolinmb/web-multi-synth">Web Multi-Synth Repo</a></p>
+      <p>Last Update 8/20/2024 - <a href="https://github.com/rolinmb/web-multi-synth">Source Code</a></p>
     </footer>
   </body>
   <script type="application/javascript" src="dist/app.js"></script>

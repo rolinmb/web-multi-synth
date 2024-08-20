@@ -152,7 +152,7 @@ document.onkeydown = (e) => {
             let sawOsc: OscillatorNode = audioCtx!.createOscillator();
             sawOsc.type = <OscillatorType>'sawtooth';
             sawOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sawOsc.connect(squareGain!).connect(masterDist!).connect(masterComp!);
+            sawOsc.connect(sawtoothGain!).connect(masterDist!).connect(masterComp!);
 
             let triOsc: OscillatorNode = audioCtx!.createOscillator();
             triOsc.type = <OscillatorType>'triangle';
@@ -286,6 +286,11 @@ document.getElementById('master-distortion-slider')!.addEventListener('input', f
     let val: number = slider.valueAsNumber;
     masterDist!.curve = getDistortionCurve(val);
     document.getElementById('master-distortion-view')!.innerHTML = val.toString();
+});
+
+document.getElementById('master-distortion-select')!.addEventListener('change', function() {
+    let select = <HTMLSelectElement>document.getElementById('master-distortion-select');
+    masterDist!.oversample = <OverSampleType>select.value;
 });
 
 document.getElementById('sine-gain-slider')!.addEventListener('input', function() {
