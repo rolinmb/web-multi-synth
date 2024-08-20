@@ -279,7 +279,6 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
     let scaled: number = 0;
     for (let i = 0; i < n_samples; i++) {
         const x: number = (i * 2) / n_samples - 1;
-        // TODO; use curveFunction to build the waveshaper waveform float array; need to define various functions with same # of params passed in?
         switch (typeStr) {
             case "tanh":
                 curve[i] = Math.tanh(k * x);
@@ -312,8 +311,10 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
                 curve[i] = k * x * curve[i];
                 break;
             case "eo":
-                curve[i]
                 curve[i] = k * x * curve[i] - (k * Math.pow(k * x, 3)) / 3;
+                break;
+            case "even":
+                curve[i] = Math.pow(x, 2) * (1 + k * Math.pow(x, 2));
                 break;
             case "odd":
                 curve[i] += ((k * x) * Math.pow(curve[i], 3)) / 3;
