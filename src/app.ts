@@ -378,6 +378,40 @@ document.getElementById('master-panning-slider')!.addEventListener('input', func
     document.getElementById('master-panning-view')!.innerHTML = val.toString();
 });
 
+document.getElementById('master-filter-frequency-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('master-filter-frequency-slider');
+    let val: number = slider.valueAsNumber;
+    masterFilter!.frequency.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('master-filter-frequency-view')!.innerHTML = val.toString();
+});
+
+document.getElementById('master-filter-detune-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('master-filter-detune-slider');
+    let val: number = slider.valueAsNumber;
+    masterFilter!.detune.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('master-filter-detune-view')!.innerHTML = val.toString();
+});
+
+document.getElementById('master-filter-qfactor-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('master-filter-qfactor-slider');
+    let val: number = slider.valueAsNumber;
+    masterFilter!.Q.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('master-filter-qfactor-view')!.innerHTML = val.toString();
+});
+
+document.getElementById('master-filter-gain-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('master-filter-gain-slider');
+    let val: number = slider.valueAsNumber;
+    masterFilter!.gain.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('master-filter-gain-view')!.innerHTML = val.toString();
+});
+
+document.getElementById('master-filter-type-select')!.addEventListener('change', function() {
+    let select = <HTMLSelectElement>document.getElementById('master-filter-type-select');
+    let slider = <HTMLInputElement>document.getElementById('master-filter-gain-slider');
+    
+});
+
 document.getElementById('sine-gain-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('sine-gain-slider');
     let val: number = slider.valueAsNumber;
