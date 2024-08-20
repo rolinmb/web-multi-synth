@@ -516,6 +516,7 @@ window.addEventListener('load', function() {
         masterFilter.detune.setValueAtTime(0, audioCtx.currentTime);
         masterFilter.Q.setValueAtTime(0, audioCtx.currentTime);
         masterFilter.gain.setValueAtTime(1, audioCtx.currentTime);
+        masterFilter.type = <BiquadFilterType>"lowpass";
 
         let masterFilterFreqSlider = <HTMLInputElement>document.getElementById('master-filter-frequency-slider');
         masterFilterFreqSlider.value = String(14000);
@@ -528,8 +529,6 @@ window.addEventListener('load', function() {
 
         let masterFilterGainSlider = <HTMLInputElement>document.getElementById('master-filter-gain-slider');
         masterFilterGainSlider.value = String(1);
-
-        masterFilterDetuneSlider.type = <BiquadFilterType>"lowpass";
 
         masterPan = audioCtx.createStereoPanner();
         masterPan.pan.setValueAtTime(0, audioCtx.currentTime);
