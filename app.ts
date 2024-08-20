@@ -10,7 +10,6 @@ var triangleGain: GainNode | undefined = undefined;
 var customGain: GainNode | undefined = undefined;
 var customWave: PeriodicWave | undefined = undefined;
 var muted: boolean = true;
-var distType: string = "tanh";
 
 type Note = {
     name: string,
