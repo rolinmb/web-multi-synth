@@ -9,6 +9,7 @@ var triangleGain: GainNode | undefined = undefined;
 var customGain: GainNode | undefined = undefined;
 var customWave: PeriodicWave | undefined = undefined;
 var muted: boolean = true;
+var distType: string = "tanh"; 
 
 type Note = {
     name: string,
@@ -269,14 +270,29 @@ document.getElementById('master-release-slider')!.addEventListener('input', func
     document.getElementById('master-release-view')!.innerHTML = val.toString();
 });
 
-function getDistortionCurve(amount?: number): Float32Array {
+function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
     const k: number = typeof amount === 'number' ? amount : 50;
     const n_samples: number = 44100;
     const curve: Float32Array = new Float32Array(n_samples);
     const deg: number = Math.PI / 180;
     for (let i = 0; i < n_samples; i++) {
         const x: number = (i * 2) / n_samples - 1;
-        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+        // TODO; use curveFunction to build the waveshaper waveform float array; need to define various functions with same # of params passed in?
+        switch (typeStr) {
+            case "tanh":
+                curve[i] = Math.tanh(k * x);
+                break;
+            case "tanhsc":
+                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                break;
+            case "log":
+                curve[i] = ((k + 1) * Math.log1p(x)) / Math.log1p(k);
+                break;
+            default:
+                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                break;
+        }
+        
     }
     return curve;
 }
@@ -284,12 +300,19 @@ function getDistortionCurve(amount?: number): Float32Array {
 document.getElementById('master-distortion-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-distortion-slider');
     let val: number = slider.valueAsNumber;
-    masterDist!.curve = getDistortionCurve(val);
+    masterDist!.curve = getDistortionCurve(distType, val);
     document.getElementById('master-distortion-view')!.innerHTML = val.toString();
 });
 
-document.getElementById('master-distortion-select')!.addEventListener('change', function() {
-    let select = <HTMLSelectElement>document.getElementById('master-distortion-select');
+document.getElementById('master-distortion-type-select')!.addEventListener('change', function() {
+    let select = <HTMLSelectElement>document.getElementById('master-distortion-type-select');
+    let slider = <HTMLInputElement>document.getElementById('master-distortion-slider');
+    let val: number = slider.valueAsNumber;
+    masterDist!.curve = getDistortionCurve(select.value, val);
+});
+
+document.getElementById('master-distortion-oversample-select')!.addEventListener('change', function() {
+    let select = <HTMLSelectElement>document.getElementById('master-distortion-oversample-select');
     masterDist!.oversample = <OverSampleType>select.value;
 });
 
@@ -411,7 +434,7 @@ window.addEventListener('load', function() {
         compressorReleaseSlider.value = String(0.25);
         
         masterDist = audioCtx.createWaveShaper();
-        masterDist.curve = getDistortionCurve(0);
+        masterDist.curve = getDistortionCurve(distType, 0);
         masterDist.oversample = <OverSampleType>'2x';
         
         let masterDistortionSlider = <HTMLInputElement>document.getElementById('master-distortion-slider');

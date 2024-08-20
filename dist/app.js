@@ -10,6 +10,7 @@ var triangleGain = undefined;
 var customGain = undefined;
 var customWave = undefined;
 var muted = true;
+var distType = "tanh";
 var c3 = { name: 'C3', frequency: 130.81, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 var cs3 = { name: 'C#3/Dd3', frequency: 138.59, isPressed: false,
@@ -231,25 +232,44 @@ document.getElementById('master-release-slider').addEventListener('input', funct
     masterComp.release.setValueAtTime(val, audioCtx.currentTime);
     document.getElementById('master-release-view').innerHTML = val.toString();
 });
-function getDistortionCurve(amount) {
+function getDistortionCurve(typeStr, amount) {
     const k = typeof amount === 'number' ? amount : 50;
     const n_samples = 44100;
     const curve = new Float32Array(n_samples);
     const deg = Math.PI / 180;
     for (let i = 0; i < n_samples; i++) {
         const x = (i * 2) / n_samples - 1;
-        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+        switch (typeStr) {
+            case "tanh":
+                curve[i] = Math.tanh(k * x);
+                break;
+            case "tanhsc":
+                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                break;
+            case "log":
+                curve[i] = ((k + 1) * Math.log1p(x)) / Math.log1p(k);
+                break;
+            default:
+                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                break;
+        }
     }
     return curve;
 }
 document.getElementById('master-distortion-slider').addEventListener('input', function () {
     let slider = document.getElementById('master-distortion-slider');
     let val = slider.valueAsNumber;
-    masterDist.curve = getDistortionCurve(val);
+    masterDist.curve = getDistortionCurve(distType, val);
     document.getElementById('master-distortion-view').innerHTML = val.toString();
 });
-document.getElementById('master-distortion-select').addEventListener('change', function () {
-    let select = document.getElementById('master-distortion-select');
+document.getElementById('master-distortion-type-select').addEventListener('change', function () {
+    let select = document.getElementById('master-distortion-type-select');
+    let slider = document.getElementById('master-distortion-slider');
+    let val = slider.valueAsNumber;
+    masterDist.curve = getDistortionCurve(select.value, val);
+});
+document.getElementById('master-distortion-oversample-select').addEventListener('change', function () {
+    let select = document.getElementById('master-distortion-oversample-select');
     masterDist.oversample = select.value;
 });
 document.getElementById('sine-gain-slider').addEventListener('input', function () {
@@ -355,7 +375,7 @@ window.addEventListener('load', function () {
         let compressorReleaseSlider = document.getElementById('master-release-slider');
         compressorReleaseSlider.value = String(0.25);
         masterDist = audioCtx.createWaveShaper();
-        masterDist.curve = getDistortionCurve(0);
+        masterDist.curve = getDistortionCurve(distType, 0);
         masterDist.oversample = '2x';
         let masterDistortionSlider = document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(0);

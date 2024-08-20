@@ -154,8 +154,16 @@
             <input id="master-distortion-slider" class="master-slider" type="range" min="0" max="300" value="0" step="1" />
           </li>
           <li class="slider-container">
-            <span class="param-view">DISTORTION OVERSAMPLING:</span>
-            <select id="master-distortion-select">
+            <span class="param-view">MASTER DISTORTION TYPE:</span>
+            <select id="master-distortion-type-select">
+              <option value="tanh">hyperbolic tangent (tanh)</option>
+              <option value="tanhsc" selected>tanh-like soft clip</option>
+              <option value="log">logarithmic</option>
+            </select>
+          </li>
+          <li class="slider-container">
+            <span class="param-view">MASTER DISTORTION OVERSAMPLING:</span>
+            <select id="master-distortion-oversample-select">
               <option value="none">none</option>
               <option value="2x" selected>2x</option>
               <option value="4x">4x</option>
