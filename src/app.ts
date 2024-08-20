@@ -408,8 +408,7 @@ document.getElementById('master-filter-gain-slider')!.addEventListener('input', 
 
 document.getElementById('master-filter-type-select')!.addEventListener('change', function() {
     let select = <HTMLSelectElement>document.getElementById('master-filter-type-select');
-    let slider = <HTMLInputElement>document.getElementById('master-filter-gain-slider');
-    
+    masterFilter!.type = <BiquadFilterType>select.value;
 });
 
 document.getElementById('sine-gain-slider')!.addEventListener('input', function() {
