@@ -363,6 +363,13 @@ document.getElementById('master-distortion-oversample-select')!.addEventListener
     masterDist!.oversample = <OverSampleType>select.value;
 });
 
+document.getElementById('master-delay-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('master-delay-slider');
+    let val: number = slider.valueAsNumber;
+    masterDelay!.delayTime.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('master-delay-view')!.innerHTML = val.toString();
+});
+
 document.getElementById('master-panning-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('master-panning-slider');
     let val: number = slider.valueAsNumber;
