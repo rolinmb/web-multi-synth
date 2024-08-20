@@ -3,6 +3,7 @@ var audioCtx = undefined;
 var masterComp = undefined;
 var masterGain = undefined;
 var masterDist = undefined;
+var masterPan = undefined;
 var sineGain = undefined;
 var squareGain = undefined;
 var sawtoothGain = undefined;
@@ -325,6 +326,12 @@ document.getElementById('master-distortion-oversample-select').addEventListener(
     let select = document.getElementById('master-distortion-oversample-select');
     masterDist.oversample = select.value;
 });
+document.getElementById('master-panning-slider').addEventListener('input', function () {
+    let slider = document.getElementById('master-panning-slider');
+    let val = slider.valueAsNumber;
+    masterPan.pan.setValueAtTime(val, audioCtx.currentTime);
+    document.getElementById('master-panning-view').innerHTML = val.toString();
+});
 document.getElementById('sine-gain-slider').addEventListener('input', function () {
     let slider = document.getElementById('sine-gain-slider');
     let val = slider.valueAsNumber;
@@ -431,7 +438,9 @@ window.addEventListener('load', function () {
         masterDist.curve = getDistortionCurve(distType, 0);
         masterDist.oversample = '2x';
         let masterDistortionSlider = document.getElementById('master-distortion-slider');
-        masterDistortionSlider.value = String(0);
+        masterDistortionSlider.value = String(10);
+        masterPan = audioCtx.createStereoPanner();
+        masterPan.pan.setValueAtTime(0, audioCtx.currentTime);
         sineGain = audioCtx.createGain();
         sineGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
         squareGain = audioCtx.createGain();

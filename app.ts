@@ -3,6 +3,7 @@ var audioCtx: AudioContext | undefined = undefined;
 var masterComp: DynamicsCompressorNode | undefined = undefined;
 var masterGain: GainNode | undefined = undefined;
 var masterDist: WaveShaperNode | undefined = undefined;
+var masterPan: StereoPannerNode | undefined = undefined;
 var sineGain: GainNode | undefined = undefined;
 var squareGain: GainNode | undefined = undefined;
 var sawtoothGain: GainNode | undefined = undefined;
@@ -361,6 +362,13 @@ document.getElementById('master-distortion-oversample-select')!.addEventListener
     masterDist!.oversample = <OverSampleType>select.value;
 });
 
+document.getElementById('master-panning-slider')!.addEventListener('input', function() {
+    let slider = <HTMLInputElement>document.getElementById('master-panning-slider');
+    let val: number = slider.valueAsNumber;
+    masterPan!.pan.setValueAtTime(val, audioCtx!.currentTime);
+    document.getElementById('master-panning-view')!.innerHTML = val.toString();
+});
+
 document.getElementById('sine-gain-slider')!.addEventListener('input', function() {
     let slider = <HTMLInputElement>document.getElementById('sine-gain-slider');
     let val: number = slider.valueAsNumber;
@@ -483,7 +491,10 @@ window.addEventListener('load', function() {
         masterDist.oversample = <OverSampleType>'2x';
         
         let masterDistortionSlider = <HTMLInputElement>document.getElementById('master-distortion-slider');
-        masterDistortionSlider.value = String(0);
+        masterDistortionSlider.value = String(10);
+
+        masterPan = audioCtx.createStereoPanner();
+        masterPan.pan.setValueAtTime(0, audioCtx.currentTime);
 
         sineGain = audioCtx.createGain();
         sineGain.gain.setValueAtTime(0.125, audioCtx.currentTime);
