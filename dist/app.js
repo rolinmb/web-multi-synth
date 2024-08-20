@@ -299,8 +299,7 @@ function getDistortionCurve(typeStr, amount) {
                     typeStr === "xor" ? (scaled ^ bitMask) :
                         typeStr === "nor" ? ~(scaled | bitMask) :
                             typeStr === "xnor" ? ~(scaled ^ bitMask) :
-                                typeStr === "and" ? (scaled & bitMask) :
-                                    ~(scaled & bitMask);
+                                typeStr === "and" ? (scaled & bitMask) : ~(scaled & bitMask);
                 curve[i] = k * x * (bitOp / Number.MAX_VALUE);
                 break;
             default:

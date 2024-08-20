@@ -81,11 +81,7 @@ var ds5: Note = { name: 'D#5/Eb5', frequency: 622.25, isPressed: false,
 var e5: Note = { name: 'E5', frequency: 659.25, isPressed: false,
     sineOsc: undefined, squareOsc: undefined, sawtoothOsc: undefined, triangleOsc: undefined, customOsc: undefined };
 
-interface NoteMap {
-    [key: string]: Note;
-}
-
-const noteMap: NoteMap = {
+const noteMap: { [key: string]: Note } = {
     'Z': c3,
     'S': cs3,
     'X': d3,
@@ -125,11 +121,7 @@ function getNoteStatusMap(): { [key: string]: boolean } {
     return noteStatusMap;
 }
 
-interface KeyMap {
-    [key: string]: boolean;
-}
-
-var pressedKeyMap: KeyMap = {};
+var pressedKeyMap: { [key: string]: boolean } = {};
 
 document.onkeydown = (e) => {
     let keyChar: string = String(e.key).toUpperCase();
@@ -330,16 +322,15 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
             case "nand":
                 scaled = Math.floor(curve[i] * Number.MAX_VALUE);
                 const bitMask = typeStr === "or" ? 0x55555555 :
-                                typeStr === "xor" ? 0xAAAAAAA :
-                                typeStr === "nor" ? 0xAAAAAAA :
-                                typeStr === "xnor" ? 0xAAAAAAA :
+                    typeStr === "xor" ? 0xAAAAAAA :
+                        typeStr === "nor" ? 0xAAAAAAA :
+                            typeStr === "xnor" ? 0xAAAAAAA :
                                 typeStr === "and" ? 0xAAAAAAA : 0xAAAAAAA;
                 const bitOp = typeStr === "or" ? (scaled | bitMask) :
-                              typeStr === "xor" ? (scaled ^ bitMask) :
-                               typeStr === "nor" ? ~(scaled | bitMask) :
-                              typeStr === "xnor" ? ~(scaled ^ bitMask) :
-                              typeStr === "and" ? (scaled & bitMask) :
-                              ~(scaled & bitMask);
+                    typeStr === "xor" ? (scaled ^ bitMask) :
+                        typeStr === "nor" ? ~(scaled | bitMask) :
+                            typeStr === "xnor" ? ~(scaled ^ bitMask) :
+                                typeStr === "and" ? (scaled & bitMask) : ~(scaled & bitMask);
                 curve[i] = k * x * (bitOp / Number.MAX_VALUE);
                 break;
             default:
