@@ -285,8 +285,33 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
             case "tanhsc":
                 curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
                 break;
-            case "log":
+            case "sine":
+                curve[i] = Math.sin(k * x)
+                break;
+            case "log1":
                 curve[i] = ((k + 1) * Math.log1p(x)) / Math.log1p(k);
+                break;
+            case "log2":
+                curve[i] = Math.log(1 + k * x * Math.abs(curve[i])) / Math.log(1 + (k * x));
+                break;
+            case "pow":
+                curve[i] = ((k * x) - (1.0 / 3.0)) * Math.pow((k * x), 3);
+                break;
+            case "sig":
+                curve[i] = 2.0 / (1 + Math.exp(-k * x)) - 1.0; 
+                break;
+            case "para":
+                curve[i] = (k * x) - Math.pow(k * x, 2);
+                break;
+            case "fuzzy":
+                curve[i] = (k * x) / (1 + k * Math.abs(x)) 
+                break;
+            case "filthy":
+                curve[i] *= k * x;
+                break;
+            case "eo":
+                curve[i] *= k * x;
+                curve[i] = curve[i] - (k * Math.pow(k * x, 3)) / 3;
                 break;
             default:
                 curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
