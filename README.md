@@ -1,8 +1,9 @@
 JavaScript Web Audio API Multi-Oscillator Synthesizer (written in TypeScript). Maps keyboard keys to notes using 12-tone equal temperment tuning, similar to FL Studio.
 
 TODO:
-  - If you play too many notes or are playing around with parameters and a lot of notes are playing it can cause the application to crash; which you can simply restart with a page reload (but still would like to prevent crashes)
-  - add more master distortion types
+  - playing too many notes or if you are playing around with parameters and a lot of notes are pressed it can cause the application to crash / strutter / leave notes playing when releasing the key; which you can simply restart with a page reload to fix (but still would like to prevent crashes)
+  - can add other effects like stereo panning, convolver, delay, filtering
+  - could make the effects modular; as in the user can add / change order of effects (more complicated obviously)
 
 Try out the multi oscillator synthesizer [here](https://web-multi-synth.vercel.app/)
 
