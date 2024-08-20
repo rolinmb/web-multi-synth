@@ -5,6 +5,7 @@ var masterGain: GainNode | undefined = undefined;
 var masterDist: WaveShaperNode | undefined = undefined;
 var masterDelay: DelayNode | undefined = undefined;
 var masterPan: StereoPannerNode | undefined = undefined;
+var masterFilter: BiquadFilterNode | undefined = undefined;
 var sineGain: GainNode | undefined = undefined;
 var squareGain: GainNode | undefined = undefined;
 var sawtoothGain: GainNode | undefined = undefined;
@@ -138,27 +139,27 @@ document.onkeydown = (e) => {
             let sinOsc: OscillatorNode = audioCtx!.createOscillator();
             sinOsc.type = <OscillatorType>'sine';
             sinOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sinOsc.connect(sineGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
+            sinOsc.connect(sineGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
 
             let sqrOsc: OscillatorNode = audioCtx!.createOscillator();
             sqrOsc.type = <OscillatorType>'square';
             sqrOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
+            sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
 
             let sawOsc: OscillatorNode = audioCtx!.createOscillator();
             sawOsc.type = <OscillatorType>'sawtooth';
             sawOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sawOsc.connect(sawtoothGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
+            sawOsc.connect(sawtoothGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
 
             let triOsc: OscillatorNode = audioCtx!.createOscillator();
             triOsc.type = <OscillatorType>'triangle';
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            triOsc.connect(triangleGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
+            triOsc.connect(triangleGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
 
             let cstmOsc: OscillatorNode = audioCtx!.createOscillator();
             cstmOsc.setPeriodicWave(customWave!);
             cstmOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            cstmOsc.connect(customGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterComp!);
+            cstmOsc.connect(customGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
 
             masterComp!.connect(masterGain!).connect(audioCtx!.destination);
 
@@ -501,14 +502,34 @@ window.addEventListener('load', function() {
         let masterDistortionSlider = <HTMLInputElement>document.getElementById('master-distortion-slider');
         masterDistortionSlider.value = String(10);
 
-        let masterDelaySlider = <HTMLInputElement>this.document.getElementById('master-delay-slider');
+        let masterDelaySlider = <HTMLInputElement>document.getElementById('master-delay-slider');
         masterDelaySlider.value = String(0.01);
 
         masterDelay = audioCtx.createDelay(3);
         masterDelay.delayTime.setValueAtTime(0.01, audioCtx.currentTime);
 
-        let masterPanningSlider = <HTMLInputElement>this.document.getElementById('master-panning-slider');
+        let masterPanningSlider = <HTMLInputElement>document.getElementById('master-panning-slider');
         masterPanningSlider.value = String(0);
+
+        masterFilter = audioCtx.createBiquadFilter();
+        masterFilter.frequency.setValueAtTime(14000, audioCtx.currentTime);
+        masterFilter.detune.setValueAtTime(0, audioCtx.currentTime);
+        masterFilter.Q.setValueAtTime(0, audioCtx.currentTime);
+        masterFilter.gain.setValueAtTime(1, audioCtx.currentTime);
+
+        let masterFilterFreqSlider = <HTMLInputElement>document.getElementById('master-filter-frequency-slider');
+        masterFilterFreqSlider.value = String(14000);
+
+        let masterFilterDetuneSlider = <HTMLInputElement>document.getElementById('master-filter-detune-slider');
+        masterFilterDetuneSlider.value = String(0);
+
+        let masterFilterQfactorSlider = <HTMLInputElement>document.getElementById('master-filter-qfactor-slider');
+        masterFilterQfactorSlider.value = String(0);
+
+        let masterFilterGainSlider = <HTMLInputElement>document.getElementById('master-filter-gain-slider');
+        masterFilterGainSlider.value = String(1);
+
+        masterFilterDetuneSlider.type = <BiquadFilterType>"lowpass";
 
         masterPan = audioCtx.createStereoPanner();
         masterPan.pan.setValueAtTime(0, audioCtx.currentTime);

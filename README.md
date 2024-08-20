@@ -6,7 +6,6 @@ BUILD: tsc && npm run prod; then open public/index.html in browser
 
 TODO:
   - playing too many notes or if you are playing around with parameters and a lot of notes are pressed it can cause the application to crash / strutter / leave notes playing when releasing the key; which you can simply restart with a page reload to fix (but still would like to prevent crashes)
-  - can add other effects like delay, filtering
   - could make the effects modular; as in the user can add / change order of effects (more complicated obviously)
 
 Try out the first edition single oscillator synthesizer [here](https://rmb-synth.vercel.app/)

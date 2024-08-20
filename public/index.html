@@ -191,13 +191,43 @@
           <br />
           <li class="slider-container">
             <span class="param-view">MASTER DELAY TIME (SECONDS): <p id="master-delay-view">0.01</p></span>
-            <input id="master-delay-slider" class="master-slider", type="range", min="0" max="3" value="0.01" step="0.01">
+            <input id="master-delay-slider" class="master-slider" type="range" min="0" max="3" value="0.01" step="0.01">
           </li>
         </ul>
           <br />
           <li class="slider-container">
             <span class="param-view">MASTER PANNING (LEFT = -1, RIGHT = 1): <p id="master-panning-view">0</p></span>
-            <input id="master-panning-slider" class="master-slider", type="range", min="-1" max="1" value="0" step="0.01">
+            <input id="master-panning-slider" class="master-slider" type="range" min="-1" max="1" value="0" step="0.01">
+          </li>
+          <li class="slider-container">
+            <span class="param-view">MASTER FILTER FREQUENCY: <p id="master-filter-frequency-view"></p></span>
+            <input id="master-filter-frequency-slider" class="master-slider" type="range" min="20" max="20000" value="14000" step="1" />
+          </li>
+          <li class="slider-container">
+            <span class="param-view">MASTER FILTER DETUNE (CENTS): <p id="master-filter-detune-view"></p></span>
+            <input id="master-filter-detune-slider" class="master-slider" type="range" min="-1200" max="1200" value="0" step="100" />
+          </li>
+          <li class="slider-container">
+            <span class="param-view">MASTER FILTER QFACTOR: <p id="master-filter-qfactor-view"></p></span>
+            <input id="master-filter-qfactor-slider" class="master-slider" type="range" min="0" max="50" value="0" step="1" />
+          </li>
+          <li class="slider-container">
+            <span class="param-view">MASTER FILTER GAIN: <p id="master-filter-gain-view"></p></span>
+            <input id="master-filter-gain-slider" class="master-slider" type="range" min="0.01" max="5" value="1" step="0.01" />
+          </li>
+          <br />
+          <li class="slider-container">
+            <span class="param-view">MASTER FILTER TYPE:</span>
+            <select id="master-filter-type-select">
+              <option value="lowpass">low-pass</option>
+              <option value="highpass">high-pass</option>
+              <option value="bandpass">band-pass</option>
+              <option value="lowshelf">low-shelf</option>
+              <option value="highshelf">high-shelf</option>
+              <option value="peaking">peaking</option>
+              <option value="notch">notch</option>
+              <option value="allpass">all-pass</option>
+            </select>
           </li>
         </ul>
         <ul id="waveform-sliders-list">
