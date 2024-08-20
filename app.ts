@@ -1,3 +1,4 @@
+
 var audioCtx: AudioContext | undefined = undefined;
 var masterComp: DynamicsCompressorNode | undefined = undefined;
 var masterGain: GainNode | undefined = undefined;
@@ -9,7 +10,7 @@ var triangleGain: GainNode | undefined = undefined;
 var customGain: GainNode | undefined = undefined;
 var customWave: PeriodicWave | undefined = undefined;
 var muted: boolean = true;
-var distType: string = "tanh"; 
+var distType: string = "tanh";
 
 type Note = {
     name: string,
@@ -275,6 +276,7 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
     const n_samples: number = 44100;
     const curve: Float32Array = new Float32Array(n_samples);
     const deg: number = Math.PI / 180;
+    let scaled: number = 0;
     for (let i = 0; i < n_samples; i++) {
         const x: number = (i * 2) / n_samples - 1;
         // TODO; use curveFunction to build the waveshaper waveform float array; need to define various functions with same # of params passed in?
@@ -295,10 +297,10 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
                 curve[i] = Math.log(1 + k * x * Math.abs(curve[i])) / Math.log(1 + (k * x));
                 break;
             case "pow":
-                curve[i] = ((k * x) - (1.0 / 3.0)) * Math.pow((k * x), 3);
+                curve[i] = ((k * x) - (1 / 3)) * Math.pow((k * x), 3);
                 break;
             case "sig":
-                curve[i] = 2.0 / (1 + Math.exp(-k * x)) - 1.0; 
+                curve[i] = 2 / (1 + Math.exp(-k * x)) - 1; 
                 break;
             case "para":
                 curve[i] = (k * x) - Math.pow(k * x, 2);
@@ -307,11 +309,37 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
                 curve[i] = (k * x) / (1 + k * Math.abs(x)) 
                 break;
             case "filthy":
-                curve[i] *= k * x;
+                curve[i] = k * x * curve[i];
                 break;
             case "eo":
-                curve[i] *= k * x;
-                curve[i] = curve[i] - (k * Math.pow(k * x, 3)) / 3;
+                curve[i]
+                curve[i] = k * x * curve[i] - (k * Math.pow(k * x, 3)) / 3;
+                break;
+            case "odd":
+                curve[i] += ((k * x) * Math.pow(curve[i], 3)) / 3;
+                break;
+            case "rekt":
+                curve[i] = Math.abs(curve[i]) * k * x;
+                break;
+            case "or":
+            case "xor":
+            case "nor":
+            case "xnor":
+            case "and":
+            case "nand":
+                scaled = Math.floor(curve[i] * Number.MAX_VALUE);
+                const bitMask = typeStr === "or" ? 0x55555555 :
+                                typeStr === "xor" ? 0xAAAAAAA :
+                                typeStr === "nor" ? 0xAAAAAAA :
+                                typeStr === "xnor" ? 0xAAAAAAA :
+                                typeStr === "and" ? 0xAAAAAAA : 0xAAAAAAA;
+                const bitOp = typeStr === "or" ? (scaled | bitMask) :
+                              typeStr === "xor" ? (scaled ^ bitMask) :
+                               typeStr === "nor" ? ~(scaled | bitMask) :
+                              typeStr === "xnor" ? ~(scaled ^ bitMask) :
+                              typeStr === "and" ? (scaled & bitMask) :
+                              ~(scaled & bitMask);
+                curve[i] = k * x * (bitOp / Number.MAX_VALUE);
                 break;
             default:
                 curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
