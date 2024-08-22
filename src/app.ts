@@ -267,7 +267,7 @@ document.getElementById('master-release-slider')!.addEventListener('input', func
     document.getElementById('master-release-view')!.innerHTML = val.toString();
 });
 
-function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
+function getDistortionCurve(typeStr: string, amount?: number): Float32Array {
     const k: number = typeof amount === 'number' ? amount : 50;
     const n_samples: number = 44100;
     const curve: Float32Array = new Float32Array(n_samples);
@@ -526,6 +526,10 @@ function drawOscilloscope() {
     canvasCtx!.stroke();
 }
 
+function isMobileDevice(): boolean {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 window.addEventListener('load', function() {
     try {
         audioCtx = new AudioContext();
@@ -640,6 +644,15 @@ window.addEventListener('load', function() {
         oscilloscope.fftSize = 2048;
 
         drawOscilloscope();
+
+        if (isMobileDevice()) {
+            const hiddenInput = <HTMLInputElement>document.getElementById('hidden-input');
+            hiddenInput.addEventListener('input', function(event: Event) {
+                const inputValue = (<HTMLInputElement>event.target).value;
+                (<HTMLInputElement>event.target).value = '';
+            });
+            hiddenInput.focus();
+        }
 
     } catch (error) {
         alert('The JavaScript Web Audio API is not supported by this browser.');
