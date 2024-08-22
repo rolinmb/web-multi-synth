@@ -12,8 +12,9 @@ var sawtoothGain: GainNode | undefined = undefined;
 var triangleGain: GainNode | undefined = undefined;
 var customGain: GainNode | undefined = undefined;
 var customWave: PeriodicWave | undefined = undefined;
+var oscilloscope: AnalyserNode | undefined = undefined;
 var muted: boolean = true;
-var distType: string = "tanh";
+var distType: string = 'tanh';
 
 type Note = {
     name: string,
@@ -139,29 +140,29 @@ document.onkeydown = (e) => {
             let sinOsc: OscillatorNode = audioCtx!.createOscillator();
             sinOsc.type = <OscillatorType>'sine';
             sinOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sinOsc.connect(sineGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
+            sinOsc.connect(sineGain!).connect(oscilloscope!);
 
             let sqrOsc: OscillatorNode = audioCtx!.createOscillator();
             sqrOsc.type = <OscillatorType>'square';
             sqrOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sqrOsc.connect(squareGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
+            sqrOsc.connect(squareGain!).connect(oscilloscope!);
 
             let sawOsc: OscillatorNode = audioCtx!.createOscillator();
             sawOsc.type = <OscillatorType>'sawtooth';
             sawOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            sawOsc.connect(sawtoothGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
+            sawOsc.connect(sawtoothGain!).connect(oscilloscope!);
 
             let triOsc: OscillatorNode = audioCtx!.createOscillator();
             triOsc.type = <OscillatorType>'triangle';
             triOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            triOsc.connect(triangleGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
+            triOsc.connect(triangleGain!).connect(oscilloscope!);
 
             let cstmOsc: OscillatorNode = audioCtx!.createOscillator();
             cstmOsc.setPeriodicWave(customWave!);
             cstmOsc.frequency.setValueAtTime(freq, audioCtx!.currentTime);
-            cstmOsc.connect(customGain!).connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!);
+            cstmOsc.connect(customGain!).connect(oscilloscope!);
 
-            masterComp!.connect(masterGain!).connect(audioCtx!.destination);
+            oscilloscope!.connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!).connect(masterGain!).connect(audioCtx!.destination);
 
             if (!muted) {
                 sinOsc.start();
@@ -275,65 +276,65 @@ function getDistortionCurve(typeStr: string ,amount?: number): Float32Array {
     for (let i = 0; i < n_samples; i++) {
         const x: number = (i * 2) / n_samples - 1;
         switch (typeStr) {
-            case "tanh":
+            case 'tanh':
                 curve[i] = Math.tanh(k * x);
                 break;
-            case "tanhsc":
+            case 'tanhsc':
                 curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
                 break;
-            case "sine":
+            case 'sine':
                 curve[i] = Math.sin(k * x)
                 break;
-            case "log1":
+            case 'log1':
                 curve[i] = ((k + 1) * Math.log1p(x)) / Math.log1p(k);
                 break;
-            case "log2":
+            case 'log2':
                 curve[i] = Math.log(1 + k * x * Math.abs(curve[i])) / Math.log(1 + (k * x));
                 break;
-            case "pow":
+            case 'pow':
                 curve[i] = ((k * x) - (1 / 3)) * Math.pow((k * x), 3);
                 break;
-            case "sig":
+            case 'sig':
                 curve[i] = 2 / (1 + Math.exp(-k * x)) - 1; 
                 break;
-            case "para":
+            case 'para':
                 curve[i] = (k * x) - Math.pow(k * x, 2);
                 break;
-            case "fuzzy":
+            case 'fuzzy':
                 curve[i] = (k * x) / (1 + k * Math.abs(x)) 
                 break;
-            case "filthy":
+            case 'filthy':
                 curve[i] = k * x * curve[i];
                 break;
-            case "eo":
+            case 'eo':
                 curve[i] = k * x * curve[i] - (k * Math.pow(k * x, 3)) / 3;
                 break;
-            case "even":
+            case 'even':
                 curve[i] = Math.pow(x, 2) * (1 + k * Math.pow(x, 2));
                 break;
-            case "odd":
+            case 'odd':
                 curve[i] += ((k * x) * Math.pow(curve[i], 3)) / 3;
                 break;
-            case "rekt":
+            case 'rekt':
                 curve[i] = Math.abs(curve[i]) * k * x;
                 break;
-            case "or":
-            case "xor":
-            case "nor":
-            case "xnor":
-            case "and":
-            case "nand":
+            case 'or':
+            case 'xor':
+            case 'nor':
+            case 'xnor':
+            case 'and':
+            case 'nand':
                 scaled = Math.floor(curve[i] * Number.MAX_VALUE);
-                const bitMask = typeStr === "or" ? 0x55555555 :
-                    typeStr === "xor" ? 0xAAAAAAA :
-                        typeStr === "nor" ? 0xAAAAAAA :
-                            typeStr === "xnor" ? 0xAAAAAAA :
-                                typeStr === "and" ? 0xAAAAAAA : 0xAAAAAAA;
-                const bitOp = typeStr === "or" ? (scaled | bitMask) :
-                    typeStr === "xor" ? (scaled ^ bitMask) :
-                        typeStr === "nor" ? ~(scaled | bitMask) :
-                            typeStr === "xnor" ? ~(scaled ^ bitMask) :
-                                typeStr === "and" ? (scaled & bitMask) : ~(scaled & bitMask);
+                const bitMask = typeStr === 'or' ? 0x55555555 :
+                    typeStr === 'xor' ? 0xAAAAAAA :
+                        typeStr === 'nor' ? 0xAAAAAAA :
+                            typeStr === 'xnor' ? 0xAAAAAAA :
+                                typeStr === 'and' ? 0xAAAAAAA : 0xAAAAAAA;
+                const bitOp = typeStr === 'or' ? (scaled | bitMask) :
+                    typeStr === 'xor' ? (scaled ^ bitMask) :
+                        typeStr === 'nor' ? ~(scaled | bitMask) :
+                            typeStr === 'xnor' ? ~(scaled ^ bitMask) :
+                                typeStr === 'and' ? (scaled & bitMask) : ~(scaled & bitMask);
                 curve[i] = k * x * (bitOp / Number.MAX_VALUE);
                 break;
             default:
@@ -496,6 +497,35 @@ document.getElementById('gen-custom-wave-btn')!.addEventListener('click', functi
     paintWaveform(real, imag);
 });
 
+function drawOscilloscope() {
+    requestAnimationFrame(drawOscilloscope);
+    const canvas = <HTMLCanvasElement>document.getElementById("oscilloscope");
+    const canvasCtx = canvas.getContext('2d');
+    const bufferLen = oscilloscope!.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLen);
+    oscilloscope!.getByteTimeDomainData(dataArray);
+    canvasCtx!.clearRect(0, 0, canvas.width, canvas.height);
+    canvasCtx!.fillStyle = "rgb(200, 200, 200)";
+    canvasCtx!.fillRect(0, 0, canvas.width, canvas.height);
+    canvasCtx!.lineWidth = 2;
+    canvasCtx!.strokeStyle = "rgb(0 ,0 , 0)";
+    canvasCtx!.beginPath();
+    const sliceWidth = canvas.width / bufferLen;
+    let x = 0;
+    for (let i = 0; i < bufferLen; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = (v * canvas.height) / 2;
+        if (i === 0) {
+            canvasCtx!.moveTo(x, y);
+        } else {
+            canvasCtx!.lineTo(x, y);
+        }
+        x += sliceWidth;
+    }
+    canvasCtx?.lineTo(canvas.width, canvas.height / 2);
+    canvasCtx!.stroke();
+}
+
 window.addEventListener('load', function() {
     try {
         audioCtx = new AudioContext();
@@ -549,7 +579,7 @@ window.addEventListener('load', function() {
         masterFilter.detune.setValueAtTime(0, audioCtx.currentTime);
         masterFilter.Q.setValueAtTime(0, audioCtx.currentTime);
         masterFilter.gain.setValueAtTime(1, audioCtx.currentTime);
-        masterFilter.type = <BiquadFilterType>"lowpass";
+        masterFilter.type = <BiquadFilterType>'lowpass';
 
         let masterFilterFreqSlider = <HTMLInputElement>document.getElementById('master-filter-frequency-slider');
         masterFilterFreqSlider.value = String(14000);
@@ -606,6 +636,11 @@ window.addEventListener('load', function() {
         let customHarmonicsSlider = <HTMLInputElement>document.getElementById('custom-harmonics-slider');
         customHarmonicsSlider.value = String(4);
         
+        oscilloscope = audioCtx.createAnalyser();
+        oscilloscope.fftSize = 2048;
+
+        drawOscilloscope();
+
     } catch (error) {
         alert('The JavaScript Web Audio API is not supported by this browser.');
     }
