@@ -31,6 +31,7 @@
   "homepage": "https://github.com/rolinmb/web-multi-synth#readme",
   "devDependencies": {
     "typescript": "^5.5.4",
+    "webmidi": "^3.1.11",
     "webpack": "^5.93.0",
     "webpack-cli": "^5.1.4"
   }

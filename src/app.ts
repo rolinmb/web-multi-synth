@@ -1,3 +1,4 @@
+import { WebMidi } from 'webmidi';
 
 var audioCtx: AudioContext | undefined = undefined;
 var masterComp: DynamicsCompressorNode | undefined = undefined;
@@ -14,6 +15,7 @@ var customGain: GainNode | undefined = undefined;
 var customWave: PeriodicWave | undefined = undefined;
 var oscilloscope: AnalyserNode | undefined = undefined;
 var muted: boolean = true;
+var useMidiKeys: boolean = false;
 var distType: string = 'tanh';
 
 type Note = {
@@ -526,11 +528,115 @@ function drawOscilloscope() {
     canvasCtx!.stroke();
 }
 
+document.getElementById('activate-midi-btn')!.addEventListener('click', function() {
+    useMidiKeys = !useMidiKeys;
+    let btn = <HTMLButtonElement>document.getElementById('activate-midi-btn');
+    if (useMidiKeys) {
+        btn.innerHTML = 'deactivate midi';
+    } else {
+        btn.innerHTML = 'activate midi';
+    }
+});
+
+function midiNoteToFrequency(midiNoteNum: number): number {
+    return 440 * Math.pow(2, (midiNoteNum - 69) / 12)
+}
+
+function handleMIDIMessage(message: WebMidi.MIDIMessageEvent) {
+    const [status, data1, data2] = message.data;
+    const command = status >> 4;
+    const note = data1;
+    const velocity = data2;
+    switch (command) {
+        case 9: // Note On
+            if (velocity > 0) {
+                midiNoteOn(note);
+            } else {
+                midiNoteOff(note);
+            }
+            break;
+        case 8: // Note Off
+            midiNoteOff(note);
+            break;
+        default:
+            break;
+    }
+}
+
+function midiNoteOn(midiNoteNum: number) {
+    if (useMidiKeys) {
+        const midiNoteFreq = midiNoteToFrequency(midiNoteNum);
+        const noteObj: Note = {
+            name: 'MIDI#'+midiNoteNum.toString(),
+            frequency: midiNoteFreq,
+            isPressed: true,
+            sineOsc: audioCtx!.createOscillator(),
+            squareOsc: audioCtx!.createOscillator(),
+            sawtoothOsc: audioCtx!.createOscillator(),
+            triangleOsc: audioCtx!.createOscillator(),
+            customOsc: audioCtx!.createOscillator(),
+        };
+
+        noteObj.sineOsc!.type = 'sine';
+        noteObj.sineOsc!.frequency.setValueAtTime(midiNoteFreq, audioCtx!.currentTime);
+        noteObj.sineOsc!.connect(sineGain!).connect(oscilloscope!);
+
+        noteObj.squareOsc!.type = 'square';
+        noteObj.squareOsc!.frequency.setValueAtTime(midiNoteFreq, audioCtx!.currentTime);
+        noteObj.squareOsc!.connect(squareGain!).connect(oscilloscope!);
+
+        noteObj.sawtoothOsc!.type = 'sawtooth';
+        noteObj.sawtoothOsc!.frequency.setValueAtTime(midiNoteFreq, audioCtx!.currentTime);
+        noteObj.sawtoothOsc!.connect(sawtoothGain!).connect(oscilloscope!);
+
+        noteObj.triangleOsc!.type = 'triangle';
+        noteObj.triangleOsc!.frequency.setValueAtTime(midiNoteFreq, audioCtx!.currentTime);
+        noteObj.triangleOsc!.connect(triangleGain!).connect(oscilloscope!);
+
+        noteObj.customOsc!.setPeriodicWave(customWave!);
+        noteObj.customOsc!.frequency.setValueAtTime(midiNoteFreq, audioCtx!.currentTime);
+        noteObj.customOsc!.connect(customGain!).connect(oscilloscope!);
+
+        oscilloscope!.connect(masterDist!).connect(masterDelay!).connect(masterPan!).connect(masterFilter!).connect(masterComp!).connect(masterGain!).connect(audioCtx!.destination);
+
+        if (!muted) {
+            noteObj.sineOsc!.start();
+            noteObj.squareOsc!.start();
+            noteObj.sawtoothOsc!.start();
+            noteObj.triangleOsc!.start();
+            noteObj.customOsc!.start();
+        }
+
+        noteMap[midiNoteNum.toString()] = noteObj;
+    }
+}
+
+function midiNoteOff(midiNoteNum: number) {
+    if (useMidiKeys) {
+        let midiNumStr = midiNoteNum.toString();
+        if (noteMap[midiNumStr]) {
+            noteMap[midiNumStr].isPressed = false;
+            try {
+                noteMap[midiNumStr].sineOsc!.stop();
+                noteMap[midiNumStr].squareOsc!.stop();
+                noteMap[midiNumStr].sawtoothOsc!.stop();
+                noteMap[midiNumStr].triangleOsc!.stop();
+                noteMap[midiNumStr].customOsc!.stop();
+            } catch {}
+            noteMap[midiNumStr].sineOsc = undefined;
+            noteMap[midiNumStr].squareOsc = undefined;
+            noteMap[midiNumStr].sawtoothOsc = undefined;
+            noteMap[midiNumStr].triangleOsc = undefined;
+            noteMap[midiNumStr].customOsc = undefined;
+        }
+    }
+}
+
 function isMobileDevice(): boolean {
     return /Mobi|Android/i.test(navigator.userAgent);
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
     try {
         audioCtx = new AudioContext();
 
@@ -644,6 +750,57 @@ window.addEventListener('load', function() {
         oscilloscope.fftSize = 2048;
 
         drawOscilloscope();
+
+        WebMidi.enable({
+            sysex: true,
+            callback: function(err: Error | undefined) {
+                if (err) {
+                    console.log('WebMidi could not be enabled:', err);
+                } else {
+                    console.log('WebMidi successfully enabled');
+                    WebMidi.addListener('connected', (e) => {
+                        console.log('MIDI device connected:', e.port.name);
+                    });
+                    WebMidi.addListener('disconnected', (e) => {
+                        console.log('MIDI device disconnected:', e.port.name);
+                    });
+                }
+            } 
+        });
+
+        let midiSelect = <HTMLSelectElement>this.document.getElementById('midi-select');
+        if (navigator.requestMIDIAccess) {
+            const midiAccess = await navigator.requestMIDIAccess();
+            const inputs = midiAccess.inputs.values();
+            let hasInputs = false;
+            for (let input of inputs) {
+                hasInputs = true;
+                const option = <HTMLOptionElement>document.createElement('option');
+                option.value = input.id;
+                option.innerHTML = input.name || input.id;
+                midiSelect.appendChild(option);
+            }
+            if (!hasInputs) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.text = 'No MIDI input devices found';
+                midiSelect.appendChild(option);
+            }
+            midiSelect.addEventListener('change', (event) => {
+                const selectedId = (event.target as HTMLSelectElement).value;
+                if (selectedId) {
+                    const input = Array.from(midiAccess.inputs.values()).find(i => i.id === selectedId);
+                    if (input) {
+                        input.onmidimessage = handleMIDIMessage;
+                    }
+                }
+            });
+        } else {
+            const option = document.createElement('option');
+            option.value = '';
+            option.text = 'Web MIDI API not supported in this browser';
+            midiSelect.appendChild(option);
+        }
 
         if (isMobileDevice()) {
             const hiddenInput = <HTMLInputElement>document.getElementById('hidden-input');
