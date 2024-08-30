@@ -608,6 +608,7 @@ function midiNoteOn(midiNoteNum: number) {
         }
 
         noteMap[midiNoteNum.toString()] = noteObj;
+        document.getElementById('note-press-view')!.innerHTML = JSON.stringify(getNoteStatusMap());
     }
 }
 
@@ -629,6 +630,7 @@ function midiNoteOff(midiNoteNum: number) {
             noteMap[midiNumStr].triangleOsc = undefined;
             noteMap[midiNumStr].customOsc = undefined;
         }
+        document.getElementById('note-press-view')!.innerHTML = JSON.stringify(getNoteStatusMap());
     }
 }
 
