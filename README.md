@@ -1,4 +1,4 @@
-JavaScript Web Audio API Multi-Oscillator Synthesizer (written in TypeScript). Maps keyboard keys to notes using 12-tone equal temperment tuning, similar to FL Studio.
+JavaScript Web Audio API Multi-Oscillator Synthesizer (written in TypeScript). Maps keyboard keys to notes using 12-tone equal temperment tuning, similar to FL Studio. Also includes WebMidi functionality; turned off initially.
 
 Try out the multi oscillator synthesizer online [here](https://web-multi-synth.vercel.app/)
 
